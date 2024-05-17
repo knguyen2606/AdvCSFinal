@@ -15,6 +15,7 @@ public class Client extends JPanel implements ActionListener {
 	private String name;
 	JButton CreateGame;
 	JButton JoinGame;
+	JButton start;
 	private ObjectOutputStream outObj;
 	MyHashMap<Player, DLList<Player>> pGame;
 
@@ -46,6 +47,10 @@ public class Client extends JPanel implements ActionListener {
 		JoinGame.addActionListener(this);
 		JoinGame.setBounds(400, 200, 150, 50);
 		JoinGame.setVisible(true);
+		start = new JButton("Start");
+		start.addActionListener(this);
+		start.setBounds(400, 200, 150, 50);
+		start.setVisible(false);
 		PlayersInServer = new JLabel();
 
 		PlayersInServer.setBounds(400, 200, 150, 50);
@@ -60,6 +65,7 @@ public class Client extends JPanel implements ActionListener {
 		this.add(JoinGame);
 		this.add(cancel);
 		this.add(PlayersInServer);
+		this.add(start);
 
 	}
 

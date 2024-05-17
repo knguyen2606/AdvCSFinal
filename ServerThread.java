@@ -16,11 +16,7 @@ public class ServerThread implements Runnable {
         clientSocket = clientSocket_;
         this.manager = manager;
 
-    
-			
-        
-         
-        
+
     }
      public void send(Object obj) {
         try {
