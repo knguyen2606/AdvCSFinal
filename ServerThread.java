@@ -10,6 +10,7 @@ public class ServerThread implements Runnable {
     private PrintWriter writer;
     private ObjectOutputStream outObj;
     private Manager manager;
+    //test
      
     public ServerThread(Manager manager,Socket clientSocket_) {
         clientSocket = clientSocket_;
