@@ -22,14 +22,14 @@ public class ClientScreen extends JPanel implements ActionListener {
 	JButton cancel;
 	boolean isServer;
 	boolean isCreate;
-//alon copied code from youtube and plagiarized this project
+	// alon copied code from youtube and plagiarized this project
 	DLList<JButton> view;
 	JLabel PlayersInServer;
 	Player newS = null;
 	Player me;
 
 	public ClientScreen(String name) throws IOException {
-		me = new Player(name, 0,false);
+		me = new Player(name, 0, false);
 
 		setLayout(null);
 		pGame = new MyHashMap<>();
@@ -87,22 +87,19 @@ public class ClientScreen extends JPanel implements ActionListener {
 			System.out.println("server");
 
 			String all = "Players: ";
-			if(pGame.get(newS).get(0).isInGame()){
-				
+			if (pGame.get(newS).get(0).isInGame()) {
+
 			}
 
-			
-
 			for (int i = 0; i < pGame.get(newS).size(); i++) {
-			
-					System.out.println("damgss");
-					if (i == pGame.get(newS).size() - 1) {
-						all += pGame.get(newS).get(i).getName();
 
-					} else {
-						all += pGame.get(newS).get(i).getName() + ",";
+				System.out.println("damgss");
+				if (i == pGame.get(newS).size() - 1) {
+					all += pGame.get(newS).get(i).getName();
 
-					
+				} else {
+					all += pGame.get(newS).get(i).getName() + ",";
+
 				}
 
 			}
@@ -115,21 +112,19 @@ public class ClientScreen extends JPanel implements ActionListener {
 
 			String all = "Players: ";
 			System.out.println(pGame.size() + ": new");
-			if(pGame.get(me).size()>=2 &&pGame.get(me).size()<=8 ){
+			if (pGame.get(me).size() >= 2 && pGame.get(me).size() <= 8) {
 				start.setVisible(true);
 			}
 
 			for (int i = 0; i < pGame.get(me).size(); i++) {
-			
-					if (i == pGame.get(me).size() - 1) {
-						all += pGame.get(me).get(i).getName();
 
-					}else  {
-						all += pGame.get(me).get(i).getName() + ",";
+				if (i == pGame.get(me).size() - 1) {
+					all += pGame.get(me).get(i).getName();
 
-					}
+				} else {
+					all += pGame.get(me).get(i).getName() + ",";
 
-				
+				}
 
 			}
 			PlayersInServer.setText(all);
@@ -159,9 +154,8 @@ public class ClientScreen extends JPanel implements ActionListener {
 		// listens for inputs
 		try {
 			me.setId((int) inObj.readObject());
-			pGame = (MyHashMap<Player,DLList<Player>>)inObj.readObject();
+			pGame = (MyHashMap<Player, DLList<Player>>) inObj.readObject();
 			System.out.println(me.getId() + " my id");
-			
 
 			while (true) {
 				System.out.println("wating for object");
@@ -200,7 +194,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 
 				System.out.println(s);
 				int counts = Integer.parseInt(s);
-				newS = new Player(null, counts);
+				newS = new Player(null, counts, false);
 				pGame.get(newS).add(me);
 				try {
 					outObj.reset();
@@ -291,22 +285,23 @@ public class ClientScreen extends JPanel implements ActionListener {
 			PlayersInServer.setVisible(false);
 			cancel.setVisible(false);
 			me.setInGame(true);
-			for(int i = 0;i<pGame.keySet().size();i++){
-				if(pGame.keySet().toDLList().get(i).getId() == me.getId()){
+			for (int i = 0; i < pGame.keySet().size(); i++) {
+				if (pGame.keySet().toDLList().get(i).getId() == me.getId()) {
 					pGame.keySet().toDLList().get(i).setInGame(true);
 
 				}
-			
+
 			}
+			try {
+				outObj.reset();
 
-			outObj.reset();
+				outObj.writeObject(pGame);
 
-			outObj.writeObject(pGame);
-
-			
-
-
-
+			} catch (IOException ex) {
+				System.out.println("ddam");
+				System.err.println(ex);
+				System.exit(1);
+			}
 
 		}
 		repaint();
