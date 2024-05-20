@@ -22,14 +22,14 @@ public class ClientScreen extends JPanel implements ActionListener {
 	JButton cancel;
 	boolean isServer;
 	boolean isCreate;
-
+//alon copied code from youtube and plagiarized this project
 	DLList<JButton> view;
 	JLabel PlayersInServer;
 	Player newS = null;
 	Player me;
 
 	public ClientScreen(String name) throws IOException {
-		me = new Player(name, 0);
+		me = new Player(name, 0,false);
 
 		setLayout(null);
 		pGame = new MyHashMap<>();
@@ -87,6 +87,11 @@ public class ClientScreen extends JPanel implements ActionListener {
 			System.out.println("server");
 
 			String all = "Players: ";
+			if(pGame.get(newS).get(0).isInGame()){
+				
+			}
+
+			
 
 			for (int i = 0; i < pGame.get(newS).size(); i++) {
 			
@@ -280,6 +285,28 @@ public class ClientScreen extends JPanel implements ActionListener {
 				this.add(view.get(i));
 
 			}
+
+		}
+		if (e.getSource() == start) {
+			PlayersInServer.setVisible(false);
+			cancel.setVisible(false);
+			me.setInGame(true);
+			for(int i = 0;i<pGame.keySet().size();i++){
+				if(pGame.keySet().toDLList().get(i).getId() == me.getId()){
+					pGame.keySet().toDLList().get(i).setInGame(true);
+
+				}
+			
+			}
+
+			outObj.reset();
+
+			outObj.writeObject(pGame);
+
+			
+
+
+
 
 		}
 		repaint();
