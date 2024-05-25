@@ -101,6 +101,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 			for (int i = 0; i < hand.size(); i++) {
 
 				Card card = hand.getCard(i);
+				System.out.println("card debug: "+card.getImage());
 				Image image = new ImageIcon(card.getImage()).getImage();
 			
     			g.drawImage(image, x, y, imageWidth, imageHeight, this);
@@ -400,14 +401,16 @@ public class ClientScreen extends JPanel implements ActionListener {
 			String[] images = { "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A" };
 
 			for (String suit : suits) {
-				for (int value = 1; value <= 13; value++) {
+				for (int value = 0; value < 13; value++) {
 
-					all.add(new Card(value, suit, images[value - 1] + suit + ".png"));
+					all.add(new Card(value, suit, images[value] + suit + ".png"));
 				}
 			}
 
 			deck = new Deck(all);
+			System.out.println("statt size: "+deck.size());
 			deck.randomize();
+			System.out.println("ends size: "+deck.size());
 			turns = pGame.get(me);
 
 			try {
@@ -419,11 +422,12 @@ public class ClientScreen extends JPanel implements ActionListener {
 					handC.add(deck.getCard(deck.size() - 1 - s));
 					deck.remove(deck.size() - 1 - s);
 				}
+				System.out.println("deck size1: " + deck.size());
 				hand = new Deck(handC);
 
 				for (int i = 1; i < turns.size(); i++) {
 					handC = new DLList<>();
-					System.out.println("deck size: " + deck.size());
+					System.out.println("deck size2: " + deck.size());
 					for (int s = 0; s < 5; s++) {
 
 						handC.add(deck.getCard(deck.size() - 1 - s));
