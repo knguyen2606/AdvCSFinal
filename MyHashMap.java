@@ -16,6 +16,10 @@ public class MyHashMap<K,V>  implements Iterable<V>,Serializable{
         keySet = new MyHashSet<K>();
     }
 
+    public boolean isEmpty(){
+        return size == 0;
+    }
+
     @SuppressWarnings("unchecked")
     public V put(K k, V v) {
         

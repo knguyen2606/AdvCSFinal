@@ -1,4 +1,5 @@
 import java.io.Serializable;
+import java.util.Iterator;
 
 public class DLList<E> implements Serializable{
 
@@ -184,6 +185,12 @@ public class DLList<E> implements Serializable{
             index++;
         }
         return -1; 
+    }
+
+
+    public Iterator<?> iterator() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'iterator'");
     }
 
 

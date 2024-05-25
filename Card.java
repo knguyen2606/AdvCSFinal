@@ -1,17 +1,27 @@
-public class Card {
-    private char suit;
-    private char value;
 
-    public Card(char value, char suit) {
+import java.io.Serializable;
+import java.util.Random;
+
+public class Card implements Serializable{
+    private String suit;
+    private int value;
+    private String imagePath;
+
+    public Card(int value, String suit, String imagePath) {
         this.value = value;
         this.suit = suit;
+        this.imagePath = imagePath;
+        
     }
 
-    public char getSuit() {
+    public String getSuit() {
         return suit;
     }
 
-    public char getValue() {
+    public int getValue() {
         return value;
+    }
+    public String getImage(){
+        return imagePath;
     }
 }

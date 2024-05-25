@@ -29,8 +29,9 @@
 				
 
                 ServerThread st = new ServerThread(m, clientSocket);
-                m.add(st);
 				m.setId(counter);
+                m.add(st);
+				
 				counter++;
                 Thread thread = new Thread(st);
                 thread.start();

@@ -3,28 +3,27 @@ import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.io.*;
 
-
 public class ServerThread implements Runnable {
 
     public Socket clientSocket;
     private PrintWriter writer;
     private ObjectOutputStream outObj;
     private Manager manager;
-    //test
-     
-    public ServerThread(Manager manager,Socket clientSocket_) {
+
+    // test
+
+    public ServerThread(Manager manager, Socket clientSocket_) {
         clientSocket = clientSocket_;
         this.manager = manager;
 
-
     }
-     public void send(Object obj) {
+
+    public void send(Object obj) {
         try {
-             System.out.println("obj1 "+obj);
+            System.out.println("obj1 " + obj);
             outObj.reset();
             outObj.writeObject(obj);
-            System.out.println("obj2 "+obj);
-            
+            System.out.println("obj2 " + obj);
 
         } catch (IOException e) {
             System.err.println("Couldn't get I/O for the connection");
@@ -33,7 +32,6 @@ public class ServerThread implements Runnable {
         }
 
     }
-    
 
     @Override
     public void run() {
@@ -44,11 +42,13 @@ public class ServerThread implements Runnable {
             ObjectInputStream inObj = new ObjectInputStream(clientSocket.getInputStream());
             outObj.writeObject(manager.getId());
             outObj.writeObject(manager.getMap());
-           
+
             while (true) {
                 System.out.println("Waiting for object");
                 Object obj = inObj.readObject();
-                 System.out.println("brodcasting object");
+                System.out.println(obj);
+
+                System.out.println("brodcasting object");
                 manager.brodcast(obj);
 
             }

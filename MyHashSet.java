@@ -6,6 +6,7 @@ public class MyHashSet<E> implements Iterable<E>,Serializable{
     private Object[] hashArray;
     private int size;
     private DLList<E> myList = new DLList<E>();
+     private int currentIndex = 0;
 
     public MyHashSet() {
         hashArray = new Object[100];
@@ -14,6 +15,9 @@ public class MyHashSet<E> implements Iterable<E>,Serializable{
 
     public int size() {
         return size;
+    }
+    public int getIndex(){
+        return currentIndex;
     }
 
     public boolean add(E ele) {
@@ -52,29 +56,36 @@ public class MyHashSet<E> implements Iterable<E>,Serializable{
 
     @Override
     public Iterator<E> iterator() {
-        return new MyHashSetIterator();
+        return null;
     }
 
-    private class MyHashSetIterator implements Iterator<E> {
-        private int currentIndex = 0;
+   
+    
+       
 
-        public boolean hasNext() {
-            while (currentIndex < hashArray.length && hashArray[currentIndex] == null) {
-                currentIndex++;
-            }
-            return currentIndex < hashArray.length;
-        }
+     public boolean hasNext() {
+        while (currentIndex < hashArray.length && hashArray[currentIndex] == null) {
+            currentIndex++;
+         }
+        int s = currentIndex;
+        currentIndex = 0;
+        return s < hashArray.length;
+     }
 
-        @SuppressWarnings("unchecked")
-        public E next() {
-            if (!hasNext()) {
-                throw new NoSuchElementException();
-            }
-            return (E) hashArray[currentIndex++];
+    @SuppressWarnings("unchecked")
+    public E next() {
+         if (!hasNext()) {
+            throw new NoSuchElementException();
         }
+        return (E) hashArray[currentIndex++];
+     }
+     public void increase(){
+        currentIndex++;
+        
+     }
 
-        public void remove() {
-            throw new UnsupportedOperationException();
-        }
+   public void remove() {
+        throw new UnsupportedOperationException();
     }
+    
 }
