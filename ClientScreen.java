@@ -389,7 +389,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 
 			for (int i = 0; i < arr.size(); i++) {
 				if (!arr.get(i).isInGame()) {
-					System.out.println("bitck");
+					System.out.println("test");
 					JButton a = new JButton(arr.get(i).getName() + "'s server");
 					a.setName(arr.get(i).getId() + "");
 					a.addActionListener(this);
