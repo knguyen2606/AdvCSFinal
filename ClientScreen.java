@@ -90,23 +90,45 @@ public class ClientScreen extends JPanel implements ActionListener {
 
 		super.paintComponent(g);
 		if (deck != null) {
-			int x = 10;
-			int y = 10;
+			int centerX = 700; // Center x-coordinate of the circle
+			int centerY = 500; // Center y-coordinate of the circle
+			int radius = 300; // Radius of the circle
 			int imageWidth = 100;
-    		int imageHeight = 100;
-			int offset = 60;
-			System.out.println("Hand size: "+  hand.size());
+			int imageHeight = 100;
+			int offset = 60; // Offset for drawing each card
+			int numPlayers = turns.size(); // Number of players
 
+			double angleIncrement = 2 * Math.PI / numPlayers; // Angle between each player in radians
 
-			for (int i = 0; i < hand.size(); i++) {
+			System.out.println("Hand size: " + hand.size());
+			System.out.println("turns size: " + turns.size());
 
-				Card card = hand.getCard(i);
-				System.out.println("card debug: "+card.getImage());
-				Image image = new ImageIcon(card.getImage()).getImage();
-			
-    			g.drawImage(image, x, y, imageWidth, imageHeight, this);
-				x += offset;
+			for (int i = 0; i < numPlayers; i++) {
+				double angle = i * angleIncrement;
+				int playerX = centerX + (int) (radius * Math.cos(angle));
+				int playerY = centerY + (int) (radius * Math.sin(angle));
 
+				// Draw player's name
+				g.drawString(turns.get(i).getId() != me.getId() ? turns.get(i).getName() : "me", playerX, playerY - 50);
+
+				// Calculate starting position for player's cards
+				int cardX = playerX - (hand.size() / 2) * offset;
+				int cardY = playerY;
+
+				for (int s = 0; s < hand.size(); s++) {
+					System.out.println("on my way");
+
+					Image image;
+					if (turns.get(i).getId() != me.getId()) {
+						image = new ImageIcon("back.png").getImage();
+					} else {
+						Card card = hand.getCard(s);
+						image = new ImageIcon(card.getImage()).getImage();
+					}
+
+					g.drawImage(image, cardX, cardY, imageWidth, imageHeight, this);
+					cardX += offset;
+				}
 			}
 
 		}
@@ -408,16 +430,19 @@ public class ClientScreen extends JPanel implements ActionListener {
 			}
 
 			deck = new Deck(all);
-			System.out.println("statt size: "+deck.size());
+			System.out.println("statt size: " + deck.size());
 			deck.randomize();
-			System.out.println("ends size: "+deck.size());
+			System.out.println("ends size: " + deck.size());
 			turns = pGame.get(me);
 
 			try {
 
 				DLList<Card> handC = new DLList<>();
 				Deck handd = new Deck(handC);
-				for (int s = 0; s < 5; s++) {
+				outObj.reset();
+				outObj.writeObject(deck);
+
+				for (int s = 0; s < 2; s++) {
 
 					handC.add(deck.getCard(deck.size() - 1 - s));
 					deck.remove(deck.size() - 1 - s);
@@ -426,9 +451,10 @@ public class ClientScreen extends JPanel implements ActionListener {
 				hand = new Deck(handC);
 
 				for (int i = 1; i < turns.size(); i++) {
+
 					handC = new DLList<>();
 					System.out.println("deck size2: " + deck.size());
-					for (int s = 0; s < 5; s++) {
+					for (int s = 0; s < 2; s++) {
 
 						handC.add(deck.getCard(deck.size() - 1 - s));
 						deck.remove(deck.size() - 1 - s);
@@ -441,10 +467,12 @@ public class ClientScreen extends JPanel implements ActionListener {
 					outObj.writeObject(handd);
 
 				}
-				outObj.reset();
-				outObj.writeObject(deck);
+				
 				outObj.reset();
 				outObj.writeObject(pGame);
+				outObj.reset();
+
+				outObj.writeObject(turns);
 
 				repaint();
 			} catch (IOException ex) {

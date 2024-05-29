@@ -4,6 +4,7 @@ public class Player implements Serializable {
     private String name;
     private int id;
     private boolean inGame;
+    
     public Player(String name,int id,boolean inGame){
         this.name = name;
         this.id = id;
