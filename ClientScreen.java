@@ -18,6 +18,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 	JButton start;
 	private ObjectOutputStream outObj;
 	MyHashMap<Player, DLList<Player>> pGame;
+	int sizeMiddle;
 
 	JButton cancel;
 	boolean isServer;
@@ -34,12 +35,15 @@ public class ClientScreen extends JPanel implements ActionListener {
 	JButton move;
 	int index;
 	int level;
+	Deck middle;
 
 	public ClientScreen(String name) throws IOException {
 		me = new Player(name, 0, false);
 		index = 0;
 		level = -1;
 		hand = new Deck(new DLList<>());
+		middle = new Deck(new DLList<>());
+		sizeMiddle = 0;
 
 		setLayout(null);
 		pGame = new MyHashMap<>();
@@ -92,7 +96,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 		if (deck != null) {
 			int centerX = 700; // Center x-coordinate of the circle
 			int centerY = 500; // Center y-coordinate of the circle
-			int radius = 300; // Radius of the circle
+			int radius = 400; // Radius of the circle
 			int imageWidth = 100;
 			int imageHeight = 100;
 			int offset = 60; // Offset for drawing each card
@@ -117,7 +121,6 @@ public class ClientScreen extends JPanel implements ActionListener {
 
 				for (int s = 0; s < hand.size(); s++) {
 					System.out.println("on my way");
-
 					Image image;
 					if (turns.get(i).getId() != me.getId()) {
 						image = new ImageIcon("back.png").getImage();
@@ -129,6 +132,16 @@ public class ClientScreen extends JPanel implements ActionListener {
 					g.drawImage(image, cardX, cardY, imageWidth, imageHeight, this);
 					cardX += offset;
 				}
+
+			}
+			int middleY = centerY;
+			int middleX = centerX - 200;
+
+			for (int i = 0; i < sizeMiddle; i++) {
+				Image image = new ImageIcon(middle.getCard(i).getImage()).getImage();
+				g.drawImage(image, middleX, middleY, imageWidth, imageHeight, this);
+				middleX += 100;
+
 			}
 
 		}
@@ -191,7 +204,6 @@ public class ClientScreen extends JPanel implements ActionListener {
 
 			}
 			PlayersInServer.setText(all);
-
 		}
 
 	}
@@ -217,6 +229,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 			me.setId((int) inObj.readObject());
 			pGame = (MyHashMap<Player, DLList<Player>>) inObj.readObject();
 			System.out.println(me.getId() + " my id");
+			boolean isMiddleS = false;
 
 			while (true) {
 				System.out.println("wating for object");
@@ -225,6 +238,16 @@ public class ClientScreen extends JPanel implements ActionListener {
 					if (!me.isInGame() && level == -1) {
 						deck = (Deck) obj;
 						System.out.println("works");
+						DLList<Card> middleC = new DLList<>();
+						for (int i = deck.size() - 1; i >= 0; i--) {
+							if (i == deck.size() - 6) {
+								break;
+
+							}
+							middleC.add(deck.getCard(i));
+						}
+						middle = new Deck(middleC);
+						repaint();
 
 					} else if (!me.isInGame() && level != -1) {
 						if (pGame.get(newS).get(level).getId() == me.getId()) {
@@ -246,9 +269,20 @@ public class ClientScreen extends JPanel implements ActionListener {
 					System.out.println(pGame.size() + "new");
 
 				} else if (obj instanceof Integer) {
+					if (isMiddleS) {
+						sizeMiddle = (int) obj;
+						isMiddleS = false;
+					}else{
+						index = (int) obj;
 
-					index = (int) obj;
+					}
 
+					
+
+				} else if (obj instanceof String) {
+					if (obj.equals("SizeMiddle")) {
+						isMiddleS = true;
+					}
 				} else if (obj instanceof Character) {
 					int r = (char) obj;
 					level = r;
@@ -266,7 +300,6 @@ public class ClientScreen extends JPanel implements ActionListener {
 							is = true;
 
 						}
-
 					}
 					if (is == false) {
 						System.out.println("not works");
@@ -315,7 +348,6 @@ public class ClientScreen extends JPanel implements ActionListener {
 					outObj.reset();
 					outObj.writeObject(pGame);
 					System.out.println("do it 2");
-
 					outObj.reset();
 					outObj.writeObject(newS);
 
@@ -439,8 +471,6 @@ public class ClientScreen extends JPanel implements ActionListener {
 
 				DLList<Card> handC = new DLList<>();
 				Deck handd = new Deck(handC);
-				outObj.reset();
-				outObj.writeObject(deck);
 
 				for (int s = 0; s < 2; s++) {
 
@@ -467,7 +497,19 @@ public class ClientScreen extends JPanel implements ActionListener {
 					outObj.writeObject(handd);
 
 				}
-				
+				outObj.reset();
+				outObj.writeObject(deck);
+				DLList<Card> middleC = new DLList<>();
+				for (int i = deck.size() - 1; i >= 0; i--) {
+					if (i == deck.size() - 6) {
+						break;
+
+					}
+					middleC.add(deck.getCard(i));
+				}
+
+				middle = new Deck(middleC);
+
 				outObj.reset();
 				outObj.writeObject(pGame);
 				outObj.reset();
@@ -484,18 +526,36 @@ public class ClientScreen extends JPanel implements ActionListener {
 
 		}
 		if (e.getSource() == move) {
+		
+			if (sizeMiddle <= middle.size() - 1) {
+				if (sizeMiddle == 0) {
+					sizeMiddle = 3;
+				} else {
+					sizeMiddle++;
+				}
+			}
 			move.setVisible(false);
 			index++;
 			if (index >= turns.size()) {
 				index = 0;
 			}
 			try {
+				
 				outObj.reset();
-
 				outObj.writeObject(index);
 				outObj.reset();
 
 				outObj.writeObject(turns);
+				if (sizeMiddle <= middle.size()) {
+					System.out.println(sizeMiddle+": size");
+					outObj.reset();
+					outObj.writeObject("SizeMiddle");
+					outObj.reset();
+					outObj.writeObject(sizeMiddle);
+
+				}
+
+				
 
 			} catch (IOException ex) {
 				System.out.println("ddam");
