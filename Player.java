@@ -5,11 +5,24 @@ public class Player implements Serializable {
     private int id;
     private boolean inGame;
     private int points;
+    private int bet;
+    private int chips;
+   
     public Player(String name,int id,boolean inGame){
         this.name = name;
         this.id = id;
         this.inGame = inGame;
         points = 0;
+        bet = 0;
+        chips= 0;
+
+    }
+    public void setChips(int val){
+        chips = val;
+
+    }
+    public int getChips(){
+        return chips;
     }
     public void setPoints(int val){
         points = val;
@@ -39,6 +52,12 @@ public class Player implements Serializable {
     public void setInGame(boolean inGame){
         this.inGame = inGame;
 
+    }
+    public int getBet(){
+        return bet;
+    }
+    public void setBet(int val){
+        bet = val;
     }
     
     
