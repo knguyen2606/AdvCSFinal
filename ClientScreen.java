@@ -23,6 +23,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 	JButton cancel;
 	boolean isServer;
 	boolean isCreate;
+	JTextField startPoints;
 	// alon copied code from youtube and plagiarized this project
 	DLList<JButton> view;
 	JLabel PlayersInServer;
@@ -35,6 +36,9 @@ public class ClientScreen extends JPanel implements ActionListener {
 	JButton move;
 	int index;
 	int level;
+	int myPoints;
+
+
 	Deck middle;
 
 	public ClientScreen(String name) throws IOException {
@@ -80,12 +84,17 @@ public class ClientScreen extends JPanel implements ActionListener {
 		move.addActionListener(this);
 		move.setBounds(400, 200, 150, 50);
 		move.setVisible(false);
+		startPoints = new JTextField("20");
+		startPoints.setBounds(600, 400, 150, 50);
+		startPoints.setVisible(false);
+
 
 		this.add(CreateGame);
 		this.add(JoinGame);
 		this.add(cancel);
 		this.add(PlayersInServer);
 		this.add(start);
+		this.add(startPoints);
 
 		this.add(move);
 	}
@@ -95,7 +104,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 		super.paintComponent(g);
 		if (deck != null) {
 			int centerX = 700; // Center x-coordinate of the circle
-			int centerY = 500; // Center y-coordinate of the circle
+			int centerY = 400; // Center y-coordinate of the circle
 			int radius = 350; // Radius of the circle
 			int imageWidth = 100;
 			int imageHeight = 100;
@@ -113,6 +122,9 @@ public class ClientScreen extends JPanel implements ActionListener {
 				int playerY = centerY + (int) (radius * Math.sin(angle));
 
 				// Draw player's name
+				g.drawString(String.valueOf(turns.get(i).getPoints()), playerX, playerY - 70);
+
+// Draw the name or "me"
 				g.drawString(turns.get(i).getId() != me.getId() ? turns.get(i).getName() : "me", playerX, playerY - 50);
 
 				// Calculate starting position for player's cards
@@ -230,7 +242,9 @@ public class ClientScreen extends JPanel implements ActionListener {
 			pGame = (MyHashMap<Player, DLList<Player>>) inObj.readObject();
 			System.out.println(me.getId() + " my id");
 			boolean isMiddleS = false;
+		
 
+			
 			while (true) {
 				System.out.println("wating for object");
 				Object obj = inObj.readObject();
@@ -270,6 +284,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 					System.out.println(pGame.size() + "new");
 
 				} else if (obj instanceof Integer) {
+					
 					if (isMiddleS) {
 						sizeMiddle = (int) obj;
 						isMiddleS = false;
@@ -284,7 +299,10 @@ public class ClientScreen extends JPanel implements ActionListener {
 					if (obj.equals("SizeMiddle")) {
 						isMiddleS = true;
 					}
-				} else if (obj instanceof Character) {
+					
+				}
+				
+				 else if (obj instanceof Character) {
 					int r = (char) obj;
 					level = r;
 				} else if (obj instanceof DLList) {
@@ -299,7 +317,6 @@ public class ClientScreen extends JPanel implements ActionListener {
 					for (int i = 0; i < turns.size(); i++) {
 						if (turns.get(i).getId() == me.getId()) {
 							is = true;
-
 						}
 					}
 					if (is == false) {
@@ -369,13 +386,9 @@ public class ClientScreen extends JPanel implements ActionListener {
 			PlayersInServer.setVisible(true);
 			repaint();
 			isServer = true;
-
 		}
-
 		if (e.getSource() == CreateGame) {
-
 			try {
-
 				pGame.put(me, new DLList<Player>());
 				pGame.get(me).add(me);
 				System.out.println(pGame.size());
@@ -388,6 +401,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 				JoinGame.setVisible(false);
 				cancel.setVisible(true);
 				PlayersInServer.setVisible(true);
+				startPoints.setVisible(true);
 
 				isCreate = true;
 
@@ -441,6 +455,9 @@ public class ClientScreen extends JPanel implements ActionListener {
 
 		}
 		if (e.getSource() == start) {
+			String valueS = startPoints.getText();
+			me.setPoints(Integer.parseInt(valueS));
+			startPoints.setVisible(false);
 			System.out.println("starting");
 			PlayersInServer.setVisible(false);
 			cancel.setVisible(false);
@@ -498,8 +515,19 @@ public class ClientScreen extends JPanel implements ActionListener {
 					outObj.writeObject(handd);
 
 				}
+				for(int i = 0;i<turns.size();i++){
+					turns.get(i).setPoints(me.getPoints());
+				}
+				outObj.reset();
+
+				outObj.writeObject(turns);
 				outObj.reset();
 				outObj.writeObject(deck);
+				outObj.reset();
+				outObj.writeObject("StartingPoints");
+				
+				
+				outObj.writeObject(myPoints);
 				DLList<Card> middleC = new DLList<>();
 				for (int i = deck.size() - 1; i >= 0; i--) {
 					if (i == deck.size() - 6) {
@@ -513,9 +541,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 
 				outObj.reset();
 				outObj.writeObject(pGame);
-				outObj.reset();
-
-				outObj.writeObject(turns);
+				
 
 				repaint();
 			} catch (IOException ex) {
