@@ -96,7 +96,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 		if (deck != null) {
 			int centerX = 700; // Center x-coordinate of the circle
 			int centerY = 500; // Center y-coordinate of the circle
-			int radius = 400; // Radius of the circle
+			int radius = 350; // Radius of the circle
 			int imageWidth = 100;
 			int imageHeight = 100;
 			int offset = 60; // Offset for drawing each card
@@ -135,7 +135,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 
 			}
 			int middleY = centerY;
-			int middleX = centerX - 200;
+			int middleX = centerX - 225;
 
 			for (int i = 0; i < sizeMiddle; i++) {
 				Image image = new ImageIcon(middle.getCard(i).getImage()).getImage();
@@ -253,9 +253,10 @@ public class ClientScreen extends JPanel implements ActionListener {
 						if (pGame.get(newS).get(level).getId() == me.getId()) {
 
 							hand = (Deck) obj;
-							level = -1;
+							
 
 						}
+						level = -1;
 
 					}
 
