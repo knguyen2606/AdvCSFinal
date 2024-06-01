@@ -8,8 +8,14 @@ public class Player implements Serializable {
     private int bet;
     private int chips;
     private boolean isfold;
+    public String handStatus;
+    public int handvalue;
+    public boolean loss;
+    private Deck hand;
    
-    public Player(String name,int id,boolean inGame){
+   
+    public boolean won;
+    public Player(String name,int id,boolean inGame,Deck hand){
         this.name = name;
         this.id = id;
         this.inGame = inGame;
@@ -17,7 +23,15 @@ public class Player implements Serializable {
         bet = 0;
         chips= 0;
         isfold = false;
+        won = false;
+        loss = false;
+        handStatus = "";
 
+        this.hand = hand;
+
+    }
+    public Deck getHand(){
+        return hand;
     }
     public void setFold(){
         isfold = true;

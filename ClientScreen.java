@@ -48,10 +48,10 @@ public class ClientScreen extends JPanel implements ActionListener {
 	Deck middle;
 
 	public ClientScreen(String name) throws IOException {
-		me = new Player(name, 0, false);
 
 		level = -1;
 		hand = new Deck(new DLList<>());
+		me = new Player(name, 0, false, hand);
 		middle = new Deck(new DLList<>());
 		sizeMiddle = 0;
 
@@ -91,7 +91,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 
 		check = new JButton("check");
 		check.addActionListener(this);
-		check.setBounds(1200,400, 150, 50);
+		check.setBounds(1200, 400, 150, 50);
 		check.setVisible(false);
 		foldButton = new JButton("Fold");
 		foldButton.addActionListener(this);
@@ -134,7 +134,14 @@ public class ClientScreen extends JPanel implements ActionListener {
 	public void paintComponent(Graphics g) {
 
 		super.paintComponent(g);
+
 		if (deck != null) {
+			if (me.won) {
+				g.drawString("you won!!!", 500, 100);
+			}
+			if (me.loss) {
+				g.drawString("you Loss!!!", 500, 100);
+			}
 			int centerX = 700; // Center x-coordinate of the circle
 			int centerY = 400; // Center y-coordinate of the circle
 			int radius = 340; // Radius of the circle
@@ -168,7 +175,11 @@ public class ClientScreen extends JPanel implements ActionListener {
 							: "me" + "-" + "folded", playerX, playerY - 50);
 
 				} else {
-					g.drawString(turns.get(i).getId() != me.getId() ? turns.get(i).getName() : "me", playerX,
+
+					g.drawString(
+							turns.get(i).getId() != me.getId() ? turns.get(i).getName()
+									: "me :" + turns.get(index).handStatus,
+							playerX,
 							playerY - 50);
 
 				}
@@ -333,6 +344,62 @@ public class ClientScreen extends JPanel implements ActionListener {
 					if (isMiddleS) {
 						sizeMiddle = (int) obj;
 						isMiddleS = false;
+						if (sizeMiddle >= 3) {
+							Deck newHand = new Deck(new DLList<>());
+							for (int i = 0; i < hand.size(); i++) {
+								newHand.getDeck().add(hand.getCard(i));
+							}
+							for (int i = 0; i < sizeMiddle; i++) {
+								newHand.getDeck().add(middle.getCard(i));
+							}
+							PokerHandChecker poke = new PokerHandChecker(newHand);
+
+							String checker = poke.determineHand();
+							if (checker.equals("Royal Flush")) {
+								turns.get(index).handvalue = 10;
+
+							}
+							if (checker.equals("Straight Flush")) {
+								turns.get(index).handvalue = 9;
+
+							}
+							if (checker.equals("Four of a Kind")) {
+								turns.get(index).handvalue = 8;
+
+							}
+							if (checker.equals("Full House")) {
+								turns.get(index).handvalue = 7;
+
+							}
+							if (checker.equals("Flush")) {
+								turns.get(index).handvalue = 6;
+
+							}
+							if (checker.equals("Straight")) {
+								turns.get(index).handvalue = 5;
+
+							}
+							if (checker.equals("Three of a Kind")) {
+								turns.get(index).handvalue = 4;
+
+							}
+							if (checker.equals("Two Pair")) {
+								turns.get(index).handvalue = 3;
+
+							}
+							if (checker.equals("One Pair")) {
+								turns.get(index).handvalue = 2;
+
+							}
+							if (checker.equals("High Card")) {
+								turns.get(index).handvalue = 1;
+
+							}
+
+							turns.get(index).handStatus = checker;
+
+						}
+
 					} else {
 						System.out.println("step 1 completed");
 
@@ -356,7 +423,10 @@ public class ClientScreen extends JPanel implements ActionListener {
 					System.out.println("start");
 
 					for (int i = 0; i < turns.size(); i++) {
-						System.out.println(turns.get(i).getId());
+						if (turns.get(i).getId() == me.getId()) {
+							me.loss = turns.get(i).loss;
+							me.won = turns.get(i).won;
+						}
 					}
 					System.out.println(me.getId());
 					boolean is = false;
@@ -382,31 +452,74 @@ public class ClientScreen extends JPanel implements ActionListener {
 
 							}
 							if (checkFC) {
-								if(!turns.get(index).getFold()){
+								if (!turns.get(index).getFold() && !turns.get(index).loss && !turns.get(index).won) {
 									check.setVisible(true);
-
 								}
-							
 
 							}
+							boolean allFold = true;
 							if (!turns.get(index).getFold()) {
-
-								betButton.setVisible(true);
-								bettingField.setVisible(true);
-								foldButton.setVisible(true);
-								int biggest = 0;
 								for (int i = 0; i < turns.size(); i++) {
-									if (turns.get(i).getPoints() > biggest) {
-										biggest = turns.get(i).getPoints();
+									if (turns.get(i).getId() == me.getId()) {
+										continue;
+									}
+									if (!turns.get(i).getFold()) {
+										allFold = false;
+
+									}
+								}
+								if (allFold) {
+									turns.get(index).won = allFold;
+									me.won = allFold;
+
+									System.out.println("you win!!!");
+
+								} else {
+
+									betButton.setVisible(true);
+									bettingField.setVisible(true);
+									foldButton.setVisible(true);
+									int biggest = 0;
+									for (int i = 0; i < turns.size(); i++) {
+										if (turns.get(i).getPoints() > biggest) {
+											biggest = turns.get(i).getPoints();
+										}
+
+									}
+									if (biggest > turns.get(index).getPoints()) {
+										callNumber = biggest;
+										biggest -= turns.get(index).getPoints();
+										callButton.setText("Call: " + biggest);
+										callButton.setVisible(true);
+
+									}
+								}
+
+							} else {
+								index--;
+								if (index < 0) {
+									index = turns.size() - 1;
+								}
+								try {
+
+									outObj.reset();
+									outObj.writeObject(index);
+									outObj.reset();
+
+									outObj.writeObject(turns);
+									if (sizeMiddle <= middle.size()) {
+										System.out.println(sizeMiddle + ": size");
+										outObj.reset();
+										outObj.writeObject("SizeMiddle");
+										outObj.reset();
+										outObj.writeObject(sizeMiddle);
+
 									}
 
-								}
-								if (biggest > turns.get(index).getPoints()) {
-									callNumber = biggest;
-									biggest -= turns.get(index).getPoints();
-									callButton.setText("Call: " + biggest);
-									callButton.setVisible(true);
-
+								} catch (IOException ex) {
+									System.out.println("ddam");
+									System.err.println(ex);
+									System.exit(1);
 								}
 
 							}
@@ -442,7 +555,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 
 				System.out.println(s);
 				int counts = Integer.parseInt(s);
-				newS = new Player(null, counts, false);
+				newS = new Player(null, counts, false, hand);
 
 				chipsField.setVisible(false);
 				int vals = Integer.parseInt(chipsField.getText());
@@ -808,6 +921,8 @@ public class ClientScreen extends JPanel implements ActionListener {
 		}
 		if (e.getSource() == foldButton) {
 			turns.get(index).setFold();
+			me.loss = true;
+			turns.get(index).loss = true;
 			check.setVisible(false);
 			betButton.setVisible(false);
 			bettingField.setVisible(false);
@@ -838,6 +953,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 				System.err.println(ex);
 				System.exit(1);
 			}
+			repaint();
 
 		}
 		if (e.getSource() == callButton) {
@@ -875,6 +991,56 @@ public class ClientScreen extends JPanel implements ActionListener {
 						} else {
 							sizeMiddle++;
 						}
+
+					} else {
+						boolean isH = true;
+						for (int i = 0; i < turns.size(); i++) {
+							if (!turns.get(i).handStatus.equals("High Card")) {
+								isH = false;
+
+							}
+
+						}
+						if (isH) {
+							int biggest = 0;
+							for (int i = 0; i < turns.size(); i++) {
+								for (int s = 0; s < turns.get(i).getHand().size(); s++) {
+									if (turns.get(i).getHand().getCard(i).getValue() > biggest) {
+										biggest = turns.get(i).getHand().getCard(i).getValue();
+									}
+
+								}
+
+							}
+							for (int i = 0; i < turns.size(); i++) {
+								if (turns.get(i).handvalue == biggest) {
+									turns.get(i).won = true;
+								} else {
+									turns.get(i).loss = true;
+
+								}
+							}
+
+						} else {
+
+							int biggest = 0;
+							for (int i = 0; i < turns.size(); i++) {
+								if (turns.get(i).handvalue > biggest) {
+									biggest = turns.get(i).handvalue;
+								}
+							}
+
+							for (int i = 0; i < turns.size(); i++) {
+								if (turns.get(i).handvalue == biggest) {
+									turns.get(i).won = true;
+								} else {
+									turns.get(i).loss = true;
+
+								}
+							}
+
+						}
+
 					}
 
 				}
