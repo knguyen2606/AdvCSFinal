@@ -35,22 +35,23 @@ public class ClientScreen extends JPanel implements ActionListener {
 	Deck deck;
 	Deck hand;
 	DLList<Player> turns;
-	JButton move;
+	JButton check;
+	int totalPoints;
 
 	JButton betButton;
 	int index;
 	int level;
-	int myPoints;
 
 	Deck middle;
 
 	public ClientScreen(String name) throws IOException {
 		me = new Player(name, 0, false);
-		index = 0;
+
 		level = -1;
 		hand = new Deck(new DLList<>());
 		middle = new Deck(new DLList<>());
 		sizeMiddle = 0;
+		totalPoints = 0;
 
 		setLayout(null);
 		pGame = new MyHashMap<>();
@@ -83,13 +84,13 @@ public class ClientScreen extends JPanel implements ActionListener {
 		cancel.setBounds(400, 600, 150, 50);
 		cancel.setVisible(false);
 
-		move = new JButton("Move1");
-		move.addActionListener(this);
-		move.setBounds(400, 200, 150, 50);
-		move.setVisible(false);
+		check = new JButton("check");
+		check.addActionListener(this);
+		check.setBounds(800, 200, 150, 50);
+		check.setVisible(false);
 		betButton = new JButton("Bet");
 		betButton.addActionListener(this);
-		betButton.setBounds(600, 200, 150, 50);
+		betButton.setBounds(1000, 200, 150, 50);
 		betButton.setVisible(false);
 		startPoints = new JTextField("20");
 		startPoints.setBounds(600, 400, 150, 50);
@@ -112,7 +113,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 		this.add(chipsField);
 		this.add(bettingField);
 
-		this.add(move);
+		this.add(check);
 	}
 
 	public void paintComponent(Graphics g) {
@@ -138,7 +139,11 @@ public class ClientScreen extends JPanel implements ActionListener {
 				int playerY = centerY + (int) (radius * Math.sin(angle));
 
 				// Draw player's name
-				g.drawString(String.valueOf(turns.get(i).getPoints()), playerX, playerY - 30);
+				if (turns.get(i).getPoints() != 0) {
+					g.drawString(String.valueOf(turns.get(i).getPoints()), playerX, playerY - 30);
+
+				}
+
 				g.drawString(String.valueOf(turns.get(i).getChips()), playerX, playerY + 125);
 
 				// Draw the name or "me"
@@ -299,12 +304,16 @@ public class ClientScreen extends JPanel implements ActionListener {
 					System.out.println(pGame.size() + "new");
 
 				} else if (obj instanceof Integer) {
+					System.out.println("step 1");
 
 					if (isMiddleS) {
 						sizeMiddle = (int) obj;
 						isMiddleS = false;
 					} else {
+						System.out.println("step 1 completed");
+
 						index = (int) obj;
+						System.out.println("dam: " + index);
 
 					}
 
@@ -341,7 +350,18 @@ public class ClientScreen extends JPanel implements ActionListener {
 
 						if (turns.get(index).getId() == me.getId()) {
 							System.out.println("finish");
-							move.setVisible(true);
+							boolean checkFC = true;
+							for (int i = 0; i < turns.size(); i++) {
+								if (turns.get(i).getPoints() != turns.get(index).getPoints()) {
+									checkFC = false;
+								}
+
+							}
+							if (checkFC) {
+								check.setVisible(true);
+
+							}
+
 							betButton.setVisible(true);
 							bettingField.setVisible(true);
 							repaint();
@@ -486,8 +506,8 @@ public class ClientScreen extends JPanel implements ActionListener {
 			String valueS = startPoints.getText();
 			me.setPoints(Integer.parseInt(valueS));
 			startPoints.setVisible(false);
-			me.setChips(Integer.parseInt(chipsField.getText()));
-			me.setChips(me.getChips() - me.getPoints());
+			me.setChips(Integer.parseInt(chipsField.getText()) - me.getPoints());
+
 			System.out.println("starting: " + me.getChips());
 			PlayersInServer.setVisible(false);
 			cancel.setVisible(false);
@@ -545,29 +565,37 @@ public class ClientScreen extends JPanel implements ActionListener {
 					outObj.writeObject(handd);
 
 				}
+				int o = 0;
 
 				for (int i = 0; i < turns.size(); i++) {
+
 					if (turns.get(i).getId() == me.getId()) {
-						turns.get(i).setPoints(me.getPoints());
+						turns.get(i).setPoints(me.getPoints() - o);
 						turns.get(i).setChips(me.getChips());
 
 					} else {
-						turns.get(i).setPoints(me.getPoints());
+
+						turns.get(i).setPoints(me.getPoints() - o);
+
 						turns.get(i).setChips(turns.get(i).getChips() - turns.get(i).getPoints());
 
 					}
+					if (me.getPoints() - o != 0) {
+						o += 10;
+					}
 
 				}
+				index = turns.size() - 1;
+				outObj.reset();
+
+				outObj.writeObject(index);
 
 				outObj.reset();
 
 				outObj.writeObject(turns);
 				outObj.reset();
 				outObj.writeObject(deck);
-				outObj.reset();
-				outObj.writeObject("StartingPoints");
 
-				outObj.writeObject(myPoints);
 				DLList<Card> middleC = new DLList<>();
 				for (int i = deck.size() - 1; i >= 0; i--) {
 					if (i == deck.size() - 6) {
@@ -588,63 +616,44 @@ public class ClientScreen extends JPanel implements ActionListener {
 				System.err.println(ex);
 				System.exit(1);
 			}
-			move.setVisible(true);
-			betButton.setVisible(true);
+			// move.setVisible(true);
+			// betButton.setVisible(true);
 			chipsField.setVisible(false);
 
 		}
-		if (e.getSource() == move) {
+		if (e.getSource() == check) {
 
-			if (sizeMiddle <= middle.size() - 1) {
-				if (sizeMiddle == 0) {
-					sizeMiddle = 3;
-				} else {
-					sizeMiddle++;
-				}
-			}
-			move.setVisible(false);
-			index++;
-			if (index >= turns.size()) {
-				index = 0;
-			}
-			try {
-
-				outObj.reset();
-				outObj.writeObject(index);
-				outObj.reset();
-
-				outObj.writeObject(turns);
-				if (sizeMiddle <= middle.size()) {
-					System.out.println(sizeMiddle + ": size");
-					outObj.reset();
-					outObj.writeObject("SizeMiddle");
-					outObj.reset();
-					outObj.writeObject(sizeMiddle);
-
-				}
-
-			} catch (IOException ex) {
-				System.out.println("ddam");
-				System.err.println(ex);
-				System.exit(1);
-			}
-
-		}
-		if (e.getSource() == betButton) {
-
-			if (sizeMiddle <= middle.size() - 1) {
-				if (sizeMiddle == 0) {
-					sizeMiddle = 3;
-				} else {
-					sizeMiddle++;
-				}
-			}
-			move.setVisible(false);
+			check.setVisible(false);
 			betButton.setVisible(false);
 			bettingField.setVisible(false);
-			index++;
-			if (index >= turns.size()) {
-				index = 0;
+
+			index--;
+
+			if (index < 0) {
+				index = turns.size() - 1;
+				;
+				boolean isEquals = true;
+				for (int i = 0; i < turns.size(); i++) {
+					if (i == turns.size() - 1) {
+						break;
+					}
+					if (turns.get(i).getPoints() != turns.get(i + 1).getPoints()) {
+						isEquals = false;
+					}
+
+				}
+				if (isEquals) {
+					if (sizeMiddle <= middle.size() - 1) {
+						if (sizeMiddle == 0) {
+
+							sizeMiddle = 3;
+						} else {
+							sizeMiddle++;
+						}
+					}
+
+				}
+
 			}
 			try {
 
@@ -666,6 +675,83 @@ public class ClientScreen extends JPanel implements ActionListener {
 				System.out.println("ddam");
 				System.err.println(ex);
 				System.exit(1);
+			}
+		}
+
+		if (e.getSource() == betButton) {
+			System.out.println("right player: " + turns.get(index).getName());
+
+			System.out.println("right index: " + index);
+
+			int betAmount = Integer.parseInt(bettingField.getText());
+			System.out.println("bet Amount: " + betAmount);
+			System.out.println("bet is: " + turns.get(index).getPoints());
+			boolean isbigger = true;
+			for (int i = 0; i < turns.size(); i++) {
+				if (turns.get(i).getPoints() > betAmount) {
+					isbigger = false;
+				}
+
+			}
+			if (isbigger) {
+				check.setVisible(false);
+				betButton.setVisible(false);
+				bettingField.setVisible(false);
+
+				turns.get(index).setChips(turns.get(index).getChips() - betAmount + turns.get(index).getPoints());
+
+				turns.get(index).setPoints(betAmount);
+
+				index--;
+
+				if (index < 0) {
+					index = turns.size() - 1;
+					;
+					boolean isEquals = true;
+					for (int i = 0; i < turns.size(); i++) {
+						if (i == turns.size() - 1) {
+							break;
+						}
+						if (turns.get(i).getPoints() != turns.get(i + 1).getPoints()) {
+							isEquals = false;
+						}
+
+					}
+					if (isEquals) {
+						if (sizeMiddle <= middle.size() - 1) {
+							if (sizeMiddle == 0) {
+
+								sizeMiddle = 3;
+							} else {
+								sizeMiddle++;
+							}
+						}
+
+					}
+
+				}
+
+				try {
+
+					outObj.reset();
+					outObj.writeObject(index);
+					outObj.reset();
+
+					outObj.writeObject(turns);
+					if (sizeMiddle <= middle.size()) {
+						System.out.println(sizeMiddle + ": size");
+						outObj.reset();
+						outObj.writeObject("SizeMiddle");
+						outObj.reset();
+						outObj.writeObject(sizeMiddle);
+
+					}
+
+				} catch (IOException ex) {
+					System.out.println("ddam");
+					System.err.println(ex);
+					System.exit(1);
+				}
 			}
 
 		}
