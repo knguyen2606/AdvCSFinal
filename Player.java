@@ -7,6 +7,7 @@ public class Player implements Serializable {
     private int points;
     private int bet;
     private int chips;
+    private boolean isfold;
    
     public Player(String name,int id,boolean inGame){
         this.name = name;
@@ -15,7 +16,17 @@ public class Player implements Serializable {
         points = 0;
         bet = 0;
         chips= 0;
+        isfold = false;
 
+    }
+    public void setFold(){
+        isfold = true;
+    }
+    public void resetFold(){
+        isfold = false;
+    }
+    public boolean getFold(){
+        return isfold;
     }
     public void setChips(int val){
         chips = val;
