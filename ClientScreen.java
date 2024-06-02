@@ -134,24 +134,25 @@ public class ClientScreen extends JPanel implements ActionListener {
 	public void paintComponent(Graphics g) {
 
 		super.paintComponent(g);
+		if (me.loss) {
+			g.drawString("you Loss!!!", 500, 100);
+			check.setVisible(false);
+			betButton.setVisible(false);
+			bettingField.setVisible(false);
+			foldButton.setVisible(false);
+			callButton.setVisible(false);
+		}
+		if (me.won) {
+			g.drawString("you won!!!", 500, 100);
+			check.setVisible(false);
+			betButton.setVisible(false);
+			bettingField.setVisible(false);
+			foldButton.setVisible(false);
+			callButton.setVisible(false);
+		}
 
-		if (deck != null) {
-			if (me.won) {
-				g.drawString("you won!!!", 500, 100);
-				check.setVisible(false);
-				betButton.setVisible(false);
-				bettingField.setVisible(false);
-				foldButton.setVisible(false);
-				callButton.setVisible(false);
-			}
-			if (me.loss) {
-				g.drawString("you Loss!!!", 500, 100);
-				check.setVisible(false);
-				betButton.setVisible(false);
-				bettingField.setVisible(false);
-				foldButton.setVisible(false);
-				callButton.setVisible(false);
-			}
+		if (deck != null && turns != null) {
+
 			int centerX = 700; // Center x-coordinate of the circle
 			int centerY = 400; // Center y-coordinate of the circle
 			int radius = 340; // Radius of the circle
@@ -185,7 +186,6 @@ public class ClientScreen extends JPanel implements ActionListener {
 							: "me" + "-" + "folded", playerX, playerY - 50);
 
 				} else {
-					
 
 					g.drawString(
 							turns.get(i).getId() != me.getId() ? turns.get(i).getName()
@@ -354,7 +354,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 				} else if (obj instanceof Integer) {
 					System.out.println("step 1");
 
-					if (isMiddleS) {
+					if (isMiddleS && deck!=null) {
 						sizeMiddle = (int) obj;
 						isMiddleS = false;
 						if (sizeMiddle >= 3) {
@@ -368,46 +368,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 							PokerHandChecker poke = new PokerHandChecker(newHand);
 
 							String checker = poke.determineHand();
-							if (checker.equals("Royal Flush")) {
-								turns.get(index).handvalue = 10;
-
-							}
-							if (checker.equals("Straight Flush")) {
-								turns.get(index).handvalue = 9;
-
-							}
-							if (checker.equals("Four of a Kind")) {
-								turns.get(index).handvalue = 8;
-
-							}
-							if (checker.equals("Full House")) {
-								turns.get(index).handvalue = 7;
-
-							}
-							if (checker.equals("Flush")) {
-								turns.get(index).handvalue = 6;
-
-							}
-							if (checker.equals("Straight")) {
-								turns.get(index).handvalue = 5;
-
-							}
-							if (checker.equals("Three of a Kind")) {
-								turns.get(index).handvalue = 4;
-
-							}
-							if (checker.equals("Two Pair")) {
-								turns.get(index).handvalue = 3;
-
-							}
-							if (checker.equals("One Pair")) {
-								turns.get(index).handvalue = 2;
-
-							}
-							if (checker.equals("High Card")) {
-								turns.get(index).handvalue = 1;
-
-							}
+							
 
 							turns.get(index).handStatus = checker;
 
@@ -451,7 +412,9 @@ public class ClientScreen extends JPanel implements ActionListener {
 					}
 					if (is == false) {
 						System.out.println("not works");
-						turns = null;
+						turns = new DLList<>();
+						deck = null;
+						middle = new Deck(null);
 						index = 0;
 
 					} else {
@@ -461,7 +424,8 @@ public class ClientScreen extends JPanel implements ActionListener {
 							turns.get(index).setHand(hand);
 							boolean checkFC = true;
 							for (int i = 0; i < turns.size(); i++) {
-								if (turns.get(i).getPoints() != turns.get(index).getPoints()) {
+								if (turns.get(i).getPoints() != turns.get(index).getPoints()
+										&& !turns.get(i).getFold()) {
 									checkFC = false;
 								}
 
@@ -938,7 +902,8 @@ public class ClientScreen extends JPanel implements ActionListener {
 								PokerHandChecker currentHand = new PokerHandChecker(turns.get(i).getHand());
 
 								// Compare the current hand with the best hand
-								if (PokerHandChecker.compareHands(currentHand, bestHand) > 0 &&!turns.get(i).getFold()) {
+								if (PokerHandChecker.compareHands(currentHand, bestHand) > 0
+										&& !turns.get(i).getFold()) {
 									bestPlayerIndex = i;
 									// If the current hand is better, update bestHand to be the current hand
 									bestHand = currentHand;
@@ -983,9 +948,10 @@ public class ClientScreen extends JPanel implements ActionListener {
 
 		}
 		if (e.getSource() == foldButton) {
-			turns.get(index).setFold();
+			// turns.get(index).setFold();
 			me.loss = true;
-			turns.get(index).loss = true;
+			// turns.get(index).loss = true;
+			turns.remove(index);
 			check.setVisible(false);
 			betButton.setVisible(false);
 			bettingField.setVisible(false);
