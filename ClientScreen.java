@@ -38,6 +38,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 	JButton check;
 	JButton callButton;
 	JButton foldButton;
+	JButton ResetButton;
 	int totalPoints;
 	int callNumber;
 
@@ -46,6 +47,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 	int level;
 
 	Deck middle;
+	boolean isMiddleS;
 
 	public ClientScreen(String name) throws IOException {
 
@@ -57,6 +59,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 
 		totalPoints = 0;
 		callNumber = 0;
+		isMiddleS = false;
 
 		setLayout(null);
 		pGame = new MyHashMap<>();
@@ -115,6 +118,10 @@ public class ClientScreen extends JPanel implements ActionListener {
 		bettingField = new JTextField("");
 		bettingField.setBounds(1500, 200, 150, 50);
 		bettingField.setVisible(false);
+		ResetButton = new JButton("Restart");
+		ResetButton.addActionListener(this);
+		ResetButton.setBounds(1300, 400, 150, 50);
+		ResetButton.setVisible(false);
 
 		this.add(CreateGame);
 		this.add(JoinGame);
@@ -127,6 +134,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 		this.add(bettingField);
 		this.add(foldButton);
 		this.add(callButton);
+		this.add(ResetButton);
 
 		this.add(check);
 	}
@@ -134,8 +142,12 @@ public class ClientScreen extends JPanel implements ActionListener {
 	public void paintComponent(Graphics g) {
 
 		super.paintComponent(g);
+		
 		if (me.loss) {
-			g.drawString("you Loss!!!", 500, 100);
+			g.setFont(new Font("TimesRoman", Font.PLAIN, 50)); 
+
+			g.drawString("you Loss!!!", 1200, 100);
+			ResetButton.setVisible(true);
 			check.setVisible(false);
 			betButton.setVisible(false);
 			bettingField.setVisible(false);
@@ -143,7 +155,10 @@ public class ClientScreen extends JPanel implements ActionListener {
 			callButton.setVisible(false);
 		}
 		if (me.won) {
-			g.drawString("you won!!!", 500, 100);
+			g.setFont(new Font("TimesRoman", Font.PLAIN, 50)); 
+
+			g.drawString("you won!!!", 1200, 100);
+			ResetButton.setVisible(true);
 			check.setVisible(false);
 			betButton.setVisible(false);
 			bettingField.setVisible(false);
@@ -292,8 +307,9 @@ public class ClientScreen extends JPanel implements ActionListener {
 			System.out.println("create");
 
 			String all = "Players: ";
-			System.out.println(pGame.size() + ": new");
+			System.out.println(pGame.get(me).size() + ": new");
 			if (pGame.get(me).size() >= 2 && pGame.get(me).size() <= 8 && once == false) {
+				System.out.println("dam works niggler");
 				once = true;
 				start.setVisible(true);
 			}
@@ -335,7 +351,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 			me.setId((int) inObj.readObject());
 			pGame = (MyHashMap<Player, DLList<Player>>) inObj.readObject();
 			System.out.println(me.getId() + " my id");
-			boolean isMiddleS = false;
+			
 
 			while (true) {
 				System.out.println("wating for object");
@@ -380,6 +396,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 					System.out.println("step 1");
 
 					if (isMiddleS && deck != null) {
+						System.out.println("step 1 mybe");
 						sizeMiddle = (int) obj;
 						isMiddleS = false;
 						if (sizeMiddle >= 3) {
@@ -601,10 +618,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 				pGame.put(me, new DLList<Player>());
 				pGame.get(me).add(me);
 				System.out.println(pGame.size());
-
-				outObj.reset();
-
-				outObj.writeObject(pGame);
+				;
 
 				CreateGame.setVisible(false);
 				JoinGame.setVisible(false);
@@ -614,7 +628,9 @@ public class ClientScreen extends JPanel implements ActionListener {
 
 				isCreate = true;
 
-				repaint();
+				outObj.reset();
+
+				outObj.writeObject(pGame);
 
 			} catch (IOException ex) {
 				System.out.println("ddam");
@@ -1097,6 +1113,54 @@ public class ClientScreen extends JPanel implements ActionListener {
 				System.exit(1);
 			}
 		}
+		if (e.getSource() == ResetButton) {
+			pGame = new MyHashMap<>();
+			int id = me.getId();
+		
+			me = new Player(name,id , false, new Deck(new DLList<>()));
+			hand = new Deck(new DLList<>());
+			middle = new Deck(new DLList<>());
+			deck = new Deck(new DLList<>());
+			sizeMiddle = 0;
+			totalPoints = 0;
+			callNumber = 0;
+		
+			
+			index = 0;
+			isServer = false;
+			isCreate = false;
+			once = false;
+			newS = null;
+			
+			isMiddleS = false;
+			turns = new DLList<>();
+			
+			level = -1;
+
+			// Reset visibility of components
+			CreateGame.setVisible(true);
+			JoinGame.setVisible(true);
+			start.setVisible(false);
+			cancel.setVisible(false);
+			PlayersInServer.setText("");
+			PlayersInServer.setVisible(false);
+			startPoints.setVisible(false);
+			check.setVisible(false);
+			foldButton.setVisible(false);
+			callButton.setVisible(false);
+			betButton.setVisible(false);
+			bettingField.setVisible(false);
+			ResetButton.setVisible(false);
+			chipsField.setVisible(false);
+
+			// Remove dynamic buttons if any
+			for (int i = 0; i < view.size(); i++) {
+				this.remove(view.get(i));
+			}
+			revalidate();
+
+		}
+		
 
 		repaint();
 

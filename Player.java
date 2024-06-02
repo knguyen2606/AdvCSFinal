@@ -28,6 +28,7 @@ public class Player implements Serializable {
         handStatus = "";
 
         this.hand = hand;
+        resetFold();
 
     }
     public void setHand(Deck hand){
