@@ -31,6 +31,9 @@ public class Player implements Serializable {
         resetFold();
 
     }
+    public void setName(String name){
+        this.name = name;
+    }
     public void setHand(Deck hand){
         this.hand = hand;
 

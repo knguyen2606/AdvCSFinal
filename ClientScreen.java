@@ -34,6 +34,9 @@ public class ClientScreen extends JPanel implements ActionListener {
 	boolean once = false;
 	Deck deck;
 	Deck hand;
+	JLabel enterusernameLabel;
+	JTextField enterUsernameField;
+	JButton PlayButton;
 	DLList<Player> turns;
 	JButton check;
 	JButton callButton;
@@ -41,19 +44,24 @@ public class ClientScreen extends JPanel implements ActionListener {
 	JButton ResetButton;
 	int totalPoints;
 	int callNumber;
+	JLabel GameTitle;
+	JButton InstuctionsButton;
+	JLabel InstructionsScreen;
 
 	JButton betButton;
 	int index;
 	int level;
+	JButton backButton;
 
 	Deck middle;
 	boolean isMiddleS;
 
-	public ClientScreen(String name) throws IOException {
+	public ClientScreen() throws IOException {
 
 		level = -1;
 		hand = new Deck(new DLList<>());
 		me = new Player(name, 0, false, hand);
+
 		middle = new Deck(new DLList<>());
 		sizeMiddle = 0;
 
@@ -63,7 +71,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 
 		setLayout(null);
 		pGame = new MyHashMap<>();
-		this.name = name;
+
 		view = new DLList<>();
 		PlayersInServer = new JLabel();
 		isServer = false;
@@ -73,11 +81,11 @@ public class ClientScreen extends JPanel implements ActionListener {
 		CreateGame = new JButton("Create Game");
 		CreateGame.addActionListener(this);
 		CreateGame.setBounds(900, 200, 150, 50);
-		CreateGame.setVisible(true);
+		CreateGame.setVisible(false);
 		JoinGame = new JButton("Join Game");
 		JoinGame.addActionListener(this);
 		JoinGame.setBounds(400, 200, 150, 50);
-		JoinGame.setVisible(true);
+		JoinGame.setVisible(false);
 		start = new JButton("Start");
 		start.addActionListener(this);
 		start.setBounds(600, 200, 150, 50);
@@ -122,6 +130,32 @@ public class ClientScreen extends JPanel implements ActionListener {
 		ResetButton.addActionListener(this);
 		ResetButton.setBounds(1300, 400, 150, 50);
 		ResetButton.setVisible(false);
+		PlayButton = new JButton("Play");
+		PlayButton.addActionListener(this);
+		PlayButton.setBounds(700, 500, 150, 50);
+		PlayButton.setVisible(true);
+		InstuctionsButton = new JButton("Instuctions");
+		InstuctionsButton.addActionListener(this);
+		InstuctionsButton.setBounds(700, 400, 150, 50);
+		InstuctionsButton.setVisible(true);
+		enterUsernameField = new JTextField("");
+		enterUsernameField.setBounds(625, 300, 300, 50);
+		enterUsernameField.setVisible(true);
+		enterusernameLabel = new JLabel("enter Username");
+		enterusernameLabel.setBounds(700, 250, 150, 50);
+		enterusernameLabel.setVisible(true);
+		GameTitle = new JLabel("Poker Clash");
+		GameTitle.setBounds(650, 100, 500, 50);
+		GameTitle.setVisible(true);
+		GameTitle.setFont(new Font("TimesRoman", Font.PLAIN, 50));
+		InstructionsScreen = new JLabel("");
+		InstructionsScreen.setBounds(650, 100, 500, 500);
+		InstructionsScreen.setVisible(false);
+		InstructionsScreen.setFont(new Font("TimesRoman", Font.PLAIN,20));
+		backButton = new JButton("back");
+		backButton.addActionListener(this);
+		backButton.setBounds(200, 600, 150, 50);
+		backButton.setVisible(false);
 
 		this.add(CreateGame);
 		this.add(JoinGame);
@@ -135,22 +169,27 @@ public class ClientScreen extends JPanel implements ActionListener {
 		this.add(foldButton);
 		this.add(callButton);
 		this.add(ResetButton);
+		this.add(PlayButton);
+		this.add(InstuctionsButton);
 
+		this.add(enterUsernameField);
+		this.add(enterusernameLabel);
+		this.add(GameTitle);
 		this.add(check);
+		this.add(InstructionsScreen);
+		this.add(backButton);
 	}
 
 	public void paintComponent(Graphics g) {
 
 		super.paintComponent(g);
-		
+
 		if (me.loss) {
-			g.setFont(new Font("TimesRoman", Font.PLAIN, 50)); 
+			g.setFont(new Font("TimesRoman", Font.PLAIN, 50));
 			g.setColor(Color.RED);
 
 			g.drawString("End of Game you Loss!!!", 1000, 100);
-		
-	
-			
+
 			ResetButton.setVisible(true);
 			check.setVisible(false);
 			betButton.setVisible(false);
@@ -159,7 +198,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 			callButton.setVisible(false);
 		}
 		if (me.won) {
-			g.setFont(new Font("TimesRoman", Font.PLAIN, 50)); 
+			g.setFont(new Font("TimesRoman", Font.PLAIN, 50));
 			g.setColor(Color.GREEN);
 			g.drawString("End of Game you won!!!", 1000, 100);
 			ResetButton.setVisible(true);
@@ -169,9 +208,8 @@ public class ClientScreen extends JPanel implements ActionListener {
 			foldButton.setVisible(false);
 			callButton.setVisible(false);
 		}
-		g.setFont(new Font("TimesRoman", Font.PLAIN, 18)); 
+		g.setFont(new Font("TimesRoman", Font.PLAIN, 18));
 		g.setColor(Color.BLACK);
-		
 
 		if (deck != null && turns != null) {
 
@@ -358,7 +396,6 @@ public class ClientScreen extends JPanel implements ActionListener {
 			me.setId((int) inObj.readObject());
 			pGame = (MyHashMap<Player, DLList<Player>>) inObj.readObject();
 			System.out.println(me.getId() + " my id");
-			
 
 			while (true) {
 				System.out.println("wating for object");
@@ -1123,25 +1160,24 @@ public class ClientScreen extends JPanel implements ActionListener {
 		if (e.getSource() == ResetButton) {
 			pGame = new MyHashMap<>();
 			int id = me.getId();
-		
-			me = new Player(name,id , false, new Deck(new DLList<>()));
+
+			me = new Player(name, id, false, new Deck(new DLList<>()));
 			hand = new Deck(new DLList<>());
 			middle = new Deck(new DLList<>());
 			deck = new Deck(new DLList<>());
 			sizeMiddle = 0;
 			totalPoints = 0;
 			callNumber = 0;
-		
-			
+
 			index = 0;
 			isServer = false;
 			isCreate = false;
 			once = false;
 			newS = null;
-			
+
 			isMiddleS = false;
 			turns = new DLList<>();
-			
+
 			level = -1;
 
 			// Reset visibility of components
@@ -1167,7 +1203,46 @@ public class ClientScreen extends JPanel implements ActionListener {
 			revalidate();
 
 		}
-		
+		if (e.getSource() == PlayButton) {
+			if (!enterUsernameField.getText().isEmpty()) {
+				name = enterUsernameField.getText();
+				me.setName(name);
+
+				PlayButton.setVisible(false);
+				GameTitle.setVisible(false);
+				enterUsernameField.setVisible(false);
+				enterusernameLabel.setVisible(false);
+				InstuctionsButton.setVisible(false);
+				JoinGame.setVisible(true);
+				CreateGame.setVisible(true);
+			}
+		}
+		if (e.getSource() == InstuctionsButton) {
+			PlayButton.setVisible(false);
+			GameTitle.setVisible(false);
+			enterUsernameField.setVisible(false);
+			enterusernameLabel.setVisible(false);
+			InstuctionsButton.setVisible(false);
+			String allstring = "Welcome to Poker Clash! In this multiplayer poker game, your goal is to win chips by forming the best possible five-card hand. Each player is dealt two private cards, and five community cards are dealt face-up on the table. Players use these seven cards to make their best hand. The game has several rounds: pre-flop, flop, turn, and river, with betting rounds in between. You can check, bet, call, raise, or fold depending on your cards and strategy. The player with the best hand, or the last player remaining after all others have folded, wins the pot. Remember, skillful bluffing and strategic betting are key to becoming a poker legend!";
+
+			String modifiedString = allstring.replace(",", ",<br>");
+
+			InstructionsScreen.setText("<html>" + modifiedString + "</html>");
+
+			InstructionsScreen.setVisible(true);
+			backButton.setVisible(true);
+
+		}
+		if(e.getSource() == backButton){
+			PlayButton.setVisible(true);
+			GameTitle.setVisible(true);
+			enterUsernameField.setVisible(true);
+			enterusernameLabel.setVisible(true);
+			InstuctionsButton.setVisible(true);
+			InstructionsScreen.setVisible(false);
+			backButton.setVisible(false);
+
+		}
 
 		repaint();
 

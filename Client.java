@@ -5,15 +5,15 @@ import javax.swing.JFrame;
 public class Client {
 
     public static void main(String[] abg) throws Exception {
-        JFrame frame = new JFrame("Game");
+        JFrame frame = new JFrame("Poker Clash");
         Scanner in = new Scanner(System.in);
       
-        System.out.println("Enter your name");
+    
 
        
       
       
-        ClientScreen s = new ClientScreen(in.nextLine());
+        ClientScreen s = new ClientScreen();
        
         frame.add(s);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
