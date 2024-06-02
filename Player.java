@@ -30,6 +30,12 @@ public class Player implements Serializable {
         this.hand = hand;
 
     }
+    public void setHand(Deck hand){
+        this.hand = hand;
+
+    }
+
+    
     public Deck getHand(){
         return hand;
     }
