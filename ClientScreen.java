@@ -198,12 +198,29 @@ public class ClientScreen extends JPanel implements ActionListener {
 				// Calculate starting position for player's cards
 				int cardX = playerX - (hand.size() / 2) * offset;
 				int cardY = playerY;
+				boolean ifWin = false;
+				for(int index = 0;index<turns.size();index++ ){
+					if(turns.get(index).won){
+						ifWin = true;
+					}
+						
+					
+				}
 
 				for (int s = 0; s < hand.size(); s++) {
 					System.out.println("on my way");
 					Image image;
-					if (turns.get(i).getId() != me.getId()) {
-						image = new ImageIcon("back.png").getImage();
+					if (turns.get(i)!=null &&turns.get(i).getId() != me.getId()) {
+						if(ifWin){
+							System.out.println("picture hand");
+						
+							image = new ImageIcon(turns.get(i).getHand().getCard(s).getImage()).getImage();
+						}
+						else{
+							image = new ImageIcon("back.png").getImage();
+
+						}
+					
 					} else {
 						Card card = hand.getCard(s);
 						image = new ImageIcon(card.getImage()).getImage();
