@@ -187,40 +187,48 @@ public class ClientScreen extends JPanel implements ActionListener {
 
 				} else {
 
+					if (turns.get(i).won) {
+						g.setColor(Color.GREEN);
+					} else if (turns.get(i).loss) {
+						g.setColor(Color.RED);
+					} else {
+						g.setColor(Color.BLACK);
+
+					}
+
 					g.drawString(
 							turns.get(i).getId() != me.getId() ? turns.get(i).getName()
 									: "me :" + turns.get(index).handStatus,
 							playerX,
 							playerY - 50);
 
+					g.setColor(Color.BLACK);
 				}
 
 				// Calculate starting position for player's cards
 				int cardX = playerX - (hand.size() / 2) * offset;
 				int cardY = playerY;
 				boolean ifWin = false;
-				for(int index = 0;index<turns.size();index++ ){
-					if(turns.get(index).won){
+				for (int d = 0; d < turns.size(); d++) {
+					if (turns.get(d).won) {
 						ifWin = true;
 					}
-						
-					
+
 				}
 
 				for (int s = 0; s < hand.size(); s++) {
 					System.out.println("on my way");
 					Image image;
-					if (turns.get(i)!=null &&turns.get(i).getId() != me.getId()) {
-						if(ifWin){
+					if (turns.get(i) != null && turns.get(i).getId() != me.getId()) {
+						if (ifWin) {
 							System.out.println("picture hand");
-						
+
 							image = new ImageIcon(turns.get(i).getHand().getCard(s).getImage()).getImage();
-						}
-						else{
+						} else {
 							image = new ImageIcon("back.png").getImage();
 
 						}
-					
+
 					} else {
 						Card card = hand.getCard(s);
 						image = new ImageIcon(card.getImage()).getImage();
@@ -371,7 +379,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 				} else if (obj instanceof Integer) {
 					System.out.println("step 1");
 
-					if (isMiddleS && deck!=null) {
+					if (isMiddleS && deck != null) {
 						sizeMiddle = (int) obj;
 						isMiddleS = false;
 						if (sizeMiddle >= 3) {
@@ -385,7 +393,6 @@ public class ClientScreen extends JPanel implements ActionListener {
 							PokerHandChecker poke = new PokerHandChecker(newHand);
 
 							String checker = poke.determineHand();
-							
 
 							turns.get(index).handStatus = checker;
 
