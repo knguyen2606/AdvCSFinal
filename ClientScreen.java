@@ -145,8 +145,12 @@ public class ClientScreen extends JPanel implements ActionListener {
 		
 		if (me.loss) {
 			g.setFont(new Font("TimesRoman", Font.PLAIN, 50)); 
+			g.setColor(Color.RED);
 
-			g.drawString("you Loss!!!", 1200, 100);
+			g.drawString("End of Game you Loss!!!", 1000, 100);
+		
+	
+			
 			ResetButton.setVisible(true);
 			check.setVisible(false);
 			betButton.setVisible(false);
@@ -156,8 +160,8 @@ public class ClientScreen extends JPanel implements ActionListener {
 		}
 		if (me.won) {
 			g.setFont(new Font("TimesRoman", Font.PLAIN, 50)); 
-
-			g.drawString("you won!!!", 1200, 100);
+			g.setColor(Color.GREEN);
+			g.drawString("End of Game you won!!!", 1000, 100);
 			ResetButton.setVisible(true);
 			check.setVisible(false);
 			betButton.setVisible(false);
@@ -165,6 +169,9 @@ public class ClientScreen extends JPanel implements ActionListener {
 			foldButton.setVisible(false);
 			callButton.setVisible(false);
 		}
+		g.setFont(new Font("TimesRoman", Font.PLAIN, 18)); 
+		g.setColor(Color.BLACK);
+		
 
 		if (deck != null && turns != null) {
 
