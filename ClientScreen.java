@@ -192,7 +192,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 			g.setFont(new Font("TimesRoman", Font.PLAIN, 50));
 			g.setColor(Color.RED);
 
-			g.drawString("End of Game you Loss!!!", 1000, 100);
+			g.drawString("End of Game you Lost!!!", 1000, 100);
 
 			ResetButton.setVisible(true);
 			check.setVisible(false);
@@ -205,7 +205,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 			playWinSound();
 			g.setFont(new Font("TimesRoman", Font.PLAIN, 50));
 			g.setColor(Color.GREEN);
-			g.drawString("End of Game you won!!!", 1000, 100);
+			g.drawString("End of Game you Won!!!", 1000, 100);
 			ResetButton.setVisible(true);
 			check.setVisible(false);
 			betButton.setVisible(false);
