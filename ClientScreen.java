@@ -122,7 +122,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 		chipsField.setVisible(false);
 
 		bettingField = new JTextField("");
-		bettingField.setBounds(1500, 200, 150, 50);
+		bettingField.setBounds(1200, 400, 150, 50);
 		bettingField.setVisible(false);
 		ResetButton = new JButton("Restart");
 		ResetButton.addActionListener(this);
@@ -636,7 +636,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 			try {
 				chipsField.setBounds(600, 600, 150, 50);
 				chipInstructions.setText(
-						"Enter the number of chips you start with in the first box and the starting points in the second box");
+						"Enter the blind you in the first box and the starting stack size in the second box");
 				chipInstructions.setVisible(true);
 				chipsField.setVisible(true);
 				pGame.put(me, new DLList<Player>());
