@@ -1,5 +1,4 @@
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class PokerHandChecker {
 
@@ -42,11 +41,7 @@ public class PokerHandChecker {
     }
 
     private static String isFourOfAKind(Deck hand) {
-        Map<Integer, Integer> valueCount = new HashMap<>();
-        for (int i = 0; i < hand.size(); i++) {
-            Card card = hand.getCard(i);
-            valueCount.put(card.getValue(), valueCount.getOrDefault(card.getValue(), 0) + 1);
-        }
+        Map<Integer, Integer> valueCount = getValueCount(hand);
         for (Map.Entry<Integer, Integer> entry : valueCount.entrySet()) {
             if (entry.getValue() == 4) {
                 return "Four of a Kind";
@@ -56,11 +51,7 @@ public class PokerHandChecker {
     }
 
     private static String isFullHouse(Deck hand) {
-        Map<Integer, Integer> valueCount = new HashMap<>();
-        for (int i = 0; i < hand.size(); i++) {
-            Card card = hand.getCard(i);
-            valueCount.put(card.getValue(), valueCount.getOrDefault(card.getValue(), 0) + 1);
-        }
+        Map<Integer, Integer> valueCount = getValueCount(hand);
         boolean hasThree = false;
         boolean hasTwo = false;
         for (Map.Entry<Integer, Integer> entry : valueCount.entrySet()) {
@@ -86,13 +77,7 @@ public class PokerHandChecker {
     }
 
     private static String isStraight(Deck hand) {
-        int[] values = new int[hand.size()];
-        for (int i = 0; i < hand.size(); i++) {
-            int value = hand.getCard(i).getValue();
-            values[i] = value == 1 ? 14 : value; // Ace can be high
-        }
-
-        sort(values);
+        int[] values = getSortedValues(hand);
 
         boolean isStraight = true;
         for (int i = 0; i < values.length - 1; i++) {
@@ -113,11 +98,7 @@ public class PokerHandChecker {
     }
 
     private static String isThreeOfAKind(Deck hand) {
-        Map<Integer, Integer> valueCount = new HashMap<>();
-        for (int i = 0; i < hand.size(); i++) {
-            Card card = hand.getCard(i);
-            valueCount.put(card.getValue(), valueCount.getOrDefault(card.getValue(), 0) + 1);
-        }
+        Map<Integer, Integer> valueCount = getValueCount(hand);
         for (Map.Entry<Integer, Integer> entry : valueCount.entrySet()) {
             if (entry.getValue() == 3) {
                 return "Three of a Kind";
@@ -127,11 +108,7 @@ public class PokerHandChecker {
     }
 
     private static String isTwoPair(Deck hand) {
-        Map<Integer, Integer> valueCount = new HashMap<>();
-        for (int i = 0; i < hand.size(); i++) {
-            Card card = hand.getCard(i);
-            valueCount.put(card.getValue(), valueCount.getOrDefault(card.getValue(), 0) + 1);
-        }
+        Map<Integer, Integer> valueCount = getValueCount(hand);
         int pairCount = 0;
         for (Map.Entry<Integer, Integer> entry : valueCount.entrySet()) {
             if (entry.getValue() == 2) {
@@ -145,11 +122,7 @@ public class PokerHandChecker {
     }
 
     private static String isOnePair(Deck hand) {
-        Map<Integer, Integer> valueCount = new HashMap<>();
-        for (int i = 0; i < hand.size(); i++) {
-            Card card = hand.getCard(i);
-            valueCount.put(card.getValue(), valueCount.getOrDefault(card.getValue(), 0) + 1);
-        }
+        Map<Integer, Integer> valueCount = getValueCount(hand);
         for (Map.Entry<Integer, Integer> entry : valueCount.entrySet()) {
             if (entry.getValue() == 2) {
                 return "One Pair";
@@ -159,23 +132,11 @@ public class PokerHandChecker {
     }
 
     public static int compareHands(PokerHandChecker hand1, PokerHandChecker hand2) {
-        String[] handRankings = {
-                "High Card", "One Pair", "Two Pair", "Three of a Kind", "Straight", "Flush", 
-                "Full House", "Four of a Kind", "Straight Flush", "Royal Flush"
-        };
-
         String handType1 = hand1.determineHand();
         String handType2 = hand2.determineHand();
 
-        int rank1 = -1, rank2 = -1;
-        for (int i = 0; i < handRankings.length; i++) {
-            if (handRankings[i].equals(handType1)) {
-                rank1 = i;
-            }
-            if (handRankings[i].equals(handType2)) {
-                rank2 = i;
-            }
-        }
+        int rank1 = getHandRank(handType1);
+        int rank2 = getHandRank(handType2);
 
         if (rank1 != rank2) {
             return Integer.compare(rank1, rank2);
@@ -184,16 +145,32 @@ public class PokerHandChecker {
         }
     }
 
+    private static int getHandRank(String handType) {
+        String[] handRankings = {
+            "High Card", "One Pair", "Two Pair", "Three of a Kind", "Straight", "Flush", 
+            "Full House", "Four of a Kind", "Straight Flush", "Royal Flush"
+        };
+        for (int i = 0; i < handRankings.length; i++) {
+            if (handRankings[i].equals(handType)) {
+                return i;
+            }
+        }
+        return -1; // Invalid hand type
+    }
+
     private static int compareSameTypeHands(Deck hand1, Deck hand2, String handType) {
         int[] values1 = getSortedValues(hand1);
         int[] values2 = getSortedValues(hand2);
 
         switch (handType) {
             case "One Pair":
+                return comparePairs(hand1, hand2, 2);
             case "Two Pair":
+                return compareTwoPairs(hand1, hand2);
             case "Three of a Kind":
+                return compareMultiples(hand1, hand2, 3);
             case "Four of a Kind":
-                return comparePairsOrMultiples(hand1, hand2);
+                return compareMultiples(hand1, hand2, 4);
             case "Full House":
                 return compareFullHouse(hand1, hand2);
             case "Flush":
@@ -207,91 +184,98 @@ public class PokerHandChecker {
         }
     }
 
+    private static int comparePairs(Deck hand1, Deck hand2, int pairSize) {
+        Map<Integer, Integer> valueCount1 = getValueCount(hand1);
+        Map<Integer, Integer> valueCount2 = getValueCount(hand2);
+
+        int pairValue1 = getKeyForCount(valueCount1, pairSize);
+        int pairValue2 = getKeyForCount(valueCount2, pairSize);
+
+        if (pairValue1 != pairValue2) {
+            return pairValue1 - pairValue2;
+        } else {
+            // Compare remaining cards if pairs have the same value
+            return compareRemainingCards(hand1, hand2, pairValue1, pairSize);
+        }
+    }
+
+    private static int compareTwoPairs(Deck hand1, Deck hand2) {
+        int[] sortedValues1 = getSortedValues(hand1);
+        int[] sortedValues2 = getSortedValues(hand2);
+
+        // Get the higher pair values
+        int highPairValue1 = getHighPairValue(hand1);
+        int highPairValue2 = getHighPairValue(hand2);
+
+        if (highPairValue1 != highPairValue2) {
+            return highPairValue1 - highPairValue2;
+        } else {
+            // Compare remaining cards if higher pairs have the same value
+            return compareRemainingCards(hand1, hand2, highPairValue1, 2);
+        }
+    }
+
+    private static int getHighPairValue(Deck hand) {
+        Map<Integer, Integer> valueCount = getValueCount(hand);
+
+        List<Integer> pairValues = new ArrayList<>();
+        for (Map.Entry<Integer, Integer> entry : valueCount.entrySet()) {
+            if (entry.getValue() == 2) {
+                pairValues.add(entry.getKey());
+            }
+        }
+
+        return Collections.max(pairValues);
+    }
+
+    private static int compareMultiples(Deck hand1, Deck hand2, int multipleSize) {
+        Map<Integer, Integer> valueCount1 = getValueCount(hand1);
+        Map<Integer, Integer> valueCount2 = getValueCount(hand2);
+
+        int value1 = getKeyForCount(valueCount1, multipleSize);
+        int value2 = getKeyForCount(valueCount2, multipleSize);
+
+        return value1 - value2;
+    }
+
+    private static int compareFullHouse(Deck hand1, Deck hand2) {
+        Map<Integer, Integer> valueCount1 = getValueCount(hand1);
+        Map<Integer, Integer> valueCount2 = getValueCount(hand2);
+
+        int three1 = getKeyForCount(valueCount1, 3);
+        int three2 = getKeyForCount(valueCount2, 3);
+
+        if (three1 != three2) return three1 - three2;
+        return getKeyForCount(valueCount1, 2) - getKeyForCount(valueCount2, 2);
+    }
+
+    private static int compareRemainingCards(Deck hand1, Deck hand2, int excludeValue, int excludeCount) {
+        int[] values1 = getSortedValuesExcluding(hand1, excludeValue, excludeCount);
+        int[] values2 = getSortedValuesExcluding(hand2, excludeValue, excludeCount);
+        return compareHighCard(values1, values2);
+    }
+
     private static int[] getSortedValues(Deck hand) {
         int[] values = new int[hand.size()];
         for (int i = 0; i < hand.size(); i++) {
             int value = hand.getCard(i).getValue();
             values[i] = value == 1 ? 14 : value; // Ace can be high
         }
-        sort(values);
+        Arrays.sort(values);
         return values;
     }
 
-    private static void sort(int[] array) {
-        // Simple bubble sort
-        for (int i = 0; i < array.length - 1; i++) {
-            for (int j = 0; j < array.length - 1 - i; j++) {
-                if (array[j] > array[j + 1]) {
-                    int temp = array[j];
-                    array[j] = array[j + 1];
-                    array[j + 1] = temp;
-                }
-            }
-        }
-    }
-
-    private static int comparePairsOrMultiples(Deck hand1, Deck hand2) {
-        Map<Integer, Integer> valueCount1 = new HashMap<>();
-        Map<Integer, Integer> valueCount2 = new HashMap<>();
-
-        for (int i = 0; i < hand1.size(); i++) {
-            Card card = hand1.getCard(i);
-            valueCount1.put(card.getValue(), valueCount1.getOrDefault(card.getValue(), 0) + 1);
-        }
-        for (int i = 0; i < hand2.size(); i++) {
-            Card card = hand2.getCard(i);
-            valueCount2.put(card.getValue(), valueCount2.getOrDefault(card.getValue(), 0) + 1);
-        }
-
-        int[] sorted1 = new int[valueCount1.size()];
-        int[] sorted2 = new int[valueCount2.size()];
-
+    private static int[] getSortedValuesExcluding(Deck hand, int excludeValue, int excludeCount) {
+        int[] values = new int[hand.size() - excludeCount];
         int index = 0;
-        for (Map.Entry<Integer, Integer> entry : valueCount1.entrySet()) {
-            sorted1[index++] = entry.getKey();
-        }
-        index = 0;
-        for (Map.Entry<Integer, Integer> entry : valueCount2.entrySet()) {
-            sorted2[index++] = entry.getKey();
-        }
-
-        sort(sorted1);
-        sort(sorted2);
-
-        for (int i = sorted1.length - 1; i >= 0; i--) {
-            if (sorted1[i] != sorted2[i]) {
-                return sorted1[i] - sorted2[i];
+        for (int i = 0; i < hand.size(); i++) {
+            int value = hand.getCard(i).getValue();
+            if (value != excludeValue) {
+                values[index++] = value;
             }
         }
-
-        return 0;
-    }
-
-    private static int compareFullHouse(Deck hand1, Deck hand2) {
-        Map<Integer, Integer> valueCount1 = new HashMap<>();
-        Map<Integer, Integer> valueCount2 = new HashMap<>();
-
-        for (int i = 0; i < hand1.size(); i++) {
-            Card card = hand1.getCard(i);
-            valueCount1.put(card.getValue(), valueCount1.getOrDefault(card.getValue(), 0) + 1);
-        }
-        for (int i = 0; i < hand2.size(); i++) {
-            Card card = hand2.getCard(i);
-            valueCount2.put(card.getValue(), valueCount2.getOrDefault(card.getValue(), 0) + 1);
-        }
-
-        int three1 = 0, two1 = 0, three2 = 0, two2 = 0;
-        for (Map.Entry<Integer, Integer> entry : valueCount1.entrySet()) {
-            if (entry.getValue() == 3) three1 = entry.getKey();
-            if (entry.getValue() == 2) two1 = entry.getKey();
-        }
-        for (Map.Entry<Integer, Integer> entry : valueCount2.entrySet()) {
-            if (entry.getValue() == 3) three2 = entry.getKey();
-            if (entry.getValue() == 2) two2 = entry.getKey();
-        }
-
-        if (three1 != three2) return three1 - three2;
-        return two1 - two2;
+        Arrays.sort(values);
+        return values;
     }
 
     private static int compareHighCard(int[] values1, int[] values2) {
@@ -301,5 +285,23 @@ public class PokerHandChecker {
             }
         }
         return 0;
+    }
+
+    private static Map<Integer, Integer> getValueCount(Deck hand) {
+        Map<Integer, Integer> valueCount = new HashMap<>();
+        for (int i = 0; i < hand.size(); i++) {
+            Card card = hand.getCard(i);
+            valueCount.put(card.getValue(), valueCount.getOrDefault(card.getValue(), 0) + 1);
+        }
+        return valueCount;
+    }
+
+    private static int getKeyForCount(Map<Integer, Integer> valueCount, int count) {
+        for (Map.Entry<Integer, Integer> entry : valueCount.entrySet()) {
+            if (entry.getValue() == count) {
+                return entry.getKey();
+            }
+        }
+        return -1; // Not found
     }
 }
