@@ -161,8 +161,7 @@ public class PokerHandChecker {
 
     public static int compareHands(PokerHandChecker hand1, PokerHandChecker hand2, String handType1, String handType2) {
 
-        System.out.println(handType1 + ": hand type 1");
-        System.out.println(handType2 + ": hand type 2");
+     
 
         int rank1 = getHandRank(handType1);
         int rank2 = getHandRank(handType2);
