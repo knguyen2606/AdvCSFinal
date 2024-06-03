@@ -161,9 +161,6 @@ public class PokerHandChecker {
 
     public static int compareHands(PokerHandChecker hand1, PokerHandChecker hand2, String handType1, String handType2) {
 
-        System.out.println(handType1 + ": hand type 1");
-        System.out.println(handType2 + ": hand type 2");
-
         int rank1 = getHandRank(handType1);
         int rank2 = getHandRank(handType2);
 
@@ -248,11 +245,15 @@ public class PokerHandChecker {
         MyHashMap<Integer, Integer> valueCount = getValueCount(hand);
         DLList<Integer> pairValues = new DLList<>();
         for (int i = 0; i < valueCount.size(); i++) {
-            if (valueCount.get(i) == 2) {
+            if (valueCount.get(i) != null && valueCount.get(i) == 2) {
                 pairValues.add(i);
             }
         }
-        return pairValues.get(pairValues.size() - 1);
+        if (pairValues.get(pairValues.size() - 1) != null) {
+            return pairValues.get(pairValues.size() - 1);
+
+        }
+        return 0;
     }
 
     private static int compareMultiples(Deck hand1, Deck hand2, int multipleSize) {
@@ -306,9 +307,13 @@ public class PokerHandChecker {
 
     private static int compareHighCard(DLList<Integer> values1, DLList<Integer> values2) {
         for (int i = values1.size() - 1; i >= 0; i--) {
-            if (!values1.get(i).equals(values2.get(i))) {
-                return values1.get(i) - values2.get(i);
+            if (values1.get(i) != null && values2.get(i) != null) {
+                if (!values1.get(i).equals(values2.get(i))) {
+                    return values1.get(i) - values2.get(i);
+                }
+
             }
+
         }
         return 0;
     }
