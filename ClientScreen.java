@@ -47,6 +47,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 	JLabel GameTitle;
 	JButton InstuctionsButton;
 	JLabel InstructionsScreen;
+	JLabel chipInstructions;
 
 	JButton betButton;
 	int index;
@@ -149,6 +150,10 @@ public class ClientScreen extends JPanel implements ActionListener {
 		InstructionsScreen.setBounds(650, 100, 500, 500);
 		InstructionsScreen.setVisible(false);
 		InstructionsScreen.setFont(new Font("TimesRoman", Font.PLAIN,20));
+		chipInstructions = new JLabel("");
+		chipInstructions.setBounds(300, 100, 700, 500);
+		chipInstructions.setVisible(false);
+		
 		backButton = new JButton("back");
 		backButton.addActionListener(this);
 		backButton.setBounds(200, 600, 150, 50);
@@ -175,6 +180,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 		this.add(check);
 		this.add(InstructionsScreen);
 		this.add(backButton);
+		this.add(chipInstructions);
 	}
 
 	public void paintComponent(Graphics g) {
@@ -619,6 +625,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 				newS = new Player(null, counts, false, hand);
 
 				chipsField.setVisible(false);
+				chipInstructions.setVisible(false);
 				int vals = Integer.parseInt(chipsField.getText());
 				me.setChips(vals);
 				pGame.get(newS).add(me);
@@ -654,7 +661,8 @@ public class ClientScreen extends JPanel implements ActionListener {
 		if (e.getSource() == CreateGame) {
 			try {
 				chipsField.setBounds(600, 600, 150, 50);
-
+				chipInstructions.setText("Enter the number of chips you start with in the first box and the starting points in the second box");
+				chipInstructions.setVisible(true);
 				chipsField.setVisible(true);
 				pGame.put(me, new DLList<Player>());
 				pGame.get(me).add(me);
@@ -665,6 +673,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 				JoinGame.setVisible(false);
 				
 				PlayersInServer.setVisible(true);
+			
 				startPoints.setVisible(true);
 
 				isCreate = true;
@@ -685,6 +694,8 @@ public class ClientScreen extends JPanel implements ActionListener {
 
 			chipsField.setVisible(true);
 			System.out.println(pGame.size() + " size");
+			chipInstructions.setText("enter your starting points");
+			chipInstructions.setVisible(true);
 
 			CreateGame.setVisible(false);
 			JoinGame.setVisible(false);
@@ -718,6 +729,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 			String valueS = startPoints.getText();
 			me.setPoints(Integer.parseInt(valueS));
 			startPoints.setVisible(false);
+			chipInstructions.setVisible(false);
 			me.setChips(Integer.parseInt(chipsField.getText()) - me.getPoints());
 
 			System.out.println("starting: " + me.getChips());
