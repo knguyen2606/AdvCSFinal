@@ -20,7 +20,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 	MyHashMap<Player, DLList<Player>> pGame;
 	int sizeMiddle;
 
-	JButton cancel;
+	
 	boolean isServer;
 	boolean isCreate;
 	JTextField startPoints;
@@ -95,10 +95,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 		PlayersInServer.setBounds(400, 200, 150, 50);
 		PlayersInServer.setVisible(false);
 
-		cancel = new JButton("Cancel");
-		cancel.addActionListener(this);
-		cancel.setBounds(400, 600, 150, 50);
-		cancel.setVisible(false);
+	
 
 		check = new JButton("check");
 		check.addActionListener(this);
@@ -159,7 +156,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 
 		this.add(CreateGame);
 		this.add(JoinGame);
-		this.add(cancel);
+	
 		this.add(PlayersInServer);
 		this.add(start);
 		this.add(startPoints);
@@ -329,7 +326,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 			if (pGame.get(newS).get(0).isInGame()) {
 				me.setInGame(true);
 				PlayersInServer.setVisible(false);
-				cancel.setVisible(false);
+				
 
 			}
 
@@ -666,7 +663,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 
 				CreateGame.setVisible(false);
 				JoinGame.setVisible(false);
-				cancel.setVisible(true);
+				
 				PlayersInServer.setVisible(true);
 				startPoints.setVisible(true);
 
@@ -683,15 +680,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 			}
 
 		}
-		if (e.getSource() == cancel) {
-			// Server.pGame.remove(name);
-			CreateGame.setVisible(true);
-			JoinGame.setVisible(true);
-			cancel.setVisible(false);
-			PlayersInServer.setVisible(false);
-			isCreate = false;
-
-		}
+		
 		if (e.getSource() == JoinGame) {
 
 			chipsField.setVisible(true);
@@ -733,7 +722,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 
 			System.out.println("starting: " + me.getChips());
 			PlayersInServer.setVisible(false);
-			cancel.setVisible(false);
+		
 			start.setVisible(false);
 			me.setInGame(true);
 
@@ -1184,7 +1173,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 			CreateGame.setVisible(true);
 			JoinGame.setVisible(true);
 			start.setVisible(false);
-			cancel.setVisible(false);
+			
 			PlayersInServer.setText("");
 			PlayersInServer.setVisible(false);
 			startPoints.setVisible(false);
