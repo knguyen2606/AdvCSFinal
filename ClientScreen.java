@@ -122,7 +122,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 		chipsField.setVisible(false);
 
 		bettingField = new JTextField("");
-		bettingField.setBounds(1500, 200, 150, 50);
+		bettingField.setBounds(1400, 200, 150, 50);
 		bettingField.setVisible(false);
 		ResetButton = new JButton("Restart");
 		ResetButton.addActionListener(this);
@@ -904,103 +904,107 @@ public class ClientScreen extends JPanel implements ActionListener {
 
 		if (e.getSource() == betButton) {
 			playSound();
+			try {
+				int betAmount = Integer.parseInt(bettingField.getText());
 
-			int betAmount = Integer.parseInt(bettingField.getText());
-
-			boolean isbigger = true;
-			for (int i = 0; i < turns.size(); i++) {
-				if (turns.get(i).getPoints() >= betAmount) {
-					isbigger = false;
-				}
-
-			}
-			if (isbigger && betAmount <= turns.get(index).getChips() + turns.get(index).getPoints()) {
-
-				check.setVisible(false);
-				betButton.setVisible(false);
-				bettingField.setVisible(false);
-				foldButton.setVisible(false);
-				callButton.setVisible(false);
-
-				turns.get(index).setChips(turns.get(index).getChips() - betAmount + turns.get(index).getPoints());
-
-				turns.get(index).setPoints(betAmount);
-
-				index--;
-
-				if (index < 0) {
-					index = turns.size() - 1;
-
-					boolean isEquals = true;
-					for (int i = 0; i < turns.size(); i++) {
-						if (i == turns.size() - 1) {
-							break;
-						}
-						if (turns.get(i).getPoints() != turns.get(i + 1).getPoints()) {
-							isEquals = false;
-						}
-
+				boolean isbigger = true;
+				for (int i = 0; i < turns.size(); i++) {
+					if (turns.get(i).getPoints() >= betAmount) {
+						isbigger = false;
 					}
-					if (isEquals) {
-						if (sizeMiddle <= middle.size() - 1) {
-							if (sizeMiddle == 0) {
 
-								sizeMiddle = 3;
-							} else {
-								sizeMiddle++;
+				}
+				if (isbigger && betAmount <= turns.get(index).getChips() + turns.get(index).getPoints()) {
+
+					check.setVisible(false);
+					betButton.setVisible(false);
+					bettingField.setVisible(false);
+					foldButton.setVisible(false);
+					callButton.setVisible(false);
+
+					turns.get(index).setChips(turns.get(index).getChips() - betAmount + turns.get(index).getPoints());
+
+					turns.get(index).setPoints(betAmount);
+
+					index--;
+
+					if (index < 0) {
+						index = turns.size() - 1;
+
+						boolean isEquals = true;
+						for (int i = 0; i < turns.size(); i++) {
+							if (i == turns.size() - 1) {
+								break;
 							}
-						} else {
-							PokerHandChecker bestHand = new PokerHandChecker(turns.get(0).getHand());
-							int bestPlayerIndex = 0;
-							String bestHandStatus = turns.get(0).handStatus;
-
-							// Loop through each turn in the turns list starting from the second hand
-							for (int i = 1; i < turns.size(); i++) {
-								// Create a new PokerHandChecker object for the current turn's hand
-								PokerHandChecker currentHand = new PokerHandChecker(turns.get(i).getHand());
-
-								// Compare the current hand with the best hand
-								if (PokerHandChecker.compareHands(currentHand, bestHand, turns.get(i).handStatus,
-										bestHandStatus) > 0) {
-									bestPlayerIndex = i;
-									bestHandStatus = turns.get(i).handStatus;
-									// If the current hand is better, update bestHand to be the current hand
-									bestHand = currentHand;
-								}
+							if (turns.get(i).getPoints() != turns.get(i + 1).getPoints()) {
+								isEquals = false;
 							}
-							for (int i = 0; i < turns.size(); i++) {
-								if (i == bestPlayerIndex) {
-									turns.get(i).won = true;
+
+						}
+						if (isEquals) {
+							if (sizeMiddle <= middle.size() - 1) {
+								if (sizeMiddle == 0) {
+
+									sizeMiddle = 3;
 								} else {
-									turns.get(i).loss = true;
+									sizeMiddle++;
+								}
+							} else {
+								PokerHandChecker bestHand = new PokerHandChecker(turns.get(0).getHand());
+								int bestPlayerIndex = 0;
+								String bestHandStatus = turns.get(0).handStatus;
 
+								// Loop through each turn in the turns list starting from the second hand
+								for (int i = 1; i < turns.size(); i++) {
+									// Create a new PokerHandChecker object for the current turn's hand
+									PokerHandChecker currentHand = new PokerHandChecker(turns.get(i).getHand());
+
+									// Compare the current hand with the best hand
+									if (PokerHandChecker.compareHands(currentHand, bestHand, turns.get(i).handStatus,
+											bestHandStatus) > 0) {
+										bestPlayerIndex = i;
+										bestHandStatus = turns.get(i).handStatus;
+										// If the current hand is better, update bestHand to be the current hand
+										bestHand = currentHand;
+									}
+								}
+								for (int i = 0; i < turns.size(); i++) {
+									if (i == bestPlayerIndex) {
+										turns.get(i).won = true;
+									} else {
+										turns.get(i).loss = true;
+
+									}
 								}
 							}
+
 						}
 
 					}
 
-				}
-
-				try {
-
-					outObj.reset();
-					outObj.writeObject(index);
-					outObj.reset();
-
-					outObj.writeObject(turns);
-					if (sizeMiddle <= middle.size()) {
+					try {
 
 						outObj.reset();
-						outObj.writeObject("SizeMiddle");
+						outObj.writeObject(index);
 						outObj.reset();
-						outObj.writeObject(sizeMiddle);
+
+						outObj.writeObject(turns);
+						if (sizeMiddle <= middle.size()) {
+
+							outObj.reset();
+							outObj.writeObject("SizeMiddle");
+							outObj.reset();
+							outObj.writeObject(sizeMiddle);
+
+						}
+
+					} catch (IOException ex) {
 
 					}
-
-				} catch (IOException ex) {
-
 				}
+
+			} catch (NumberFormatException f) {
+
 			}
 
 		}

@@ -248,7 +248,7 @@ public class PokerHandChecker {
         MyHashMap<Integer, Integer> valueCount = getValueCount(hand);
         DLList<Integer> pairValues = new DLList<>();
         for (int i = 0; i < valueCount.size(); i++) {
-            if (valueCount.get(i) == 2) {
+            if (valueCount.get(i)!=null && valueCount.get(i) == 2) {
                 pairValues.add(i);
             }
         }
