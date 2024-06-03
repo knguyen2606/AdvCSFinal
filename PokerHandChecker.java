@@ -251,7 +251,11 @@ public class PokerHandChecker {
                 pairValues.add(i);
             }
         }
-        return pairValues.get(pairValues.size() - 1);
+        if(pairValues.get(pairValues.size() - 1)!=null){
+            return pairValues.get(pairValues.size() - 1);
+
+        }
+        return 0;
     }
 
     private static int compareMultiples(Deck hand1, Deck hand2, int multipleSize) {
