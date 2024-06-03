@@ -123,9 +123,9 @@ public class ClientScreen extends JPanel implements ActionListener {
 
 		bettingField = new JTextField("");
 
-		bettingField.setBounds(1200, 400, 150, 50);
+		bettingField.setBounds(1200, 100, 150, 50);
 
-		bettingField.setBounds(1400, 200, 150, 50);
+		bettingField.setBounds(1200, 100, 150, 50);
 		bettingField.setVisible(false);
 		ResetButton = new JButton("Restart");
 		ResetButton.addActionListener(this);
