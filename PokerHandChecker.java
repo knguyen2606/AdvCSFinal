@@ -139,7 +139,7 @@ public class PokerHandChecker {
         int rank2 = getHandRank(handType2);
 
         if (rank1 != rank2) {
-            return Integer.compare(rank1, rank2);
+            return rank1-rank2;
         } else {
             return compareSameTypeHands(hand1.hand, hand2.hand, handType1);
         }

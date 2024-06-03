@@ -188,6 +188,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 		super.paintComponent(g);
 
 		if (me.loss) {
+			playLossSound();
 			g.setFont(new Font("TimesRoman", Font.PLAIN, 50));
 			g.setColor(Color.RED);
 
@@ -201,6 +202,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 			callButton.setVisible(false);
 		}
 		if (me.won) {
+			playWinSound();
 			g.setFont(new Font("TimesRoman", Font.PLAIN, 50));
 			g.setColor(Color.GREEN);
 			g.drawString("End of Game you won!!!", 1000, 100);
@@ -1219,6 +1221,30 @@ public class ClientScreen extends JPanel implements ActionListener {
 
         try {
             java.net.URL url = this.getClass().getClassLoader().getResource("PokerClick.wav");
+            Clip clip = AudioSystem.getClip();
+            clip.open(AudioSystem.getAudioInputStream(url));
+            clip.start();
+			
+        } catch (Exception exc) {
+            exc.printStackTrace(System.out);
+        }
+    }
+	public void playWinSound() {
+
+        try {
+            java.net.URL url = this.getClass().getClassLoader().getResource("WinSound.wav");
+            Clip clip = AudioSystem.getClip();
+            clip.open(AudioSystem.getAudioInputStream(url));
+            clip.start();
+			
+        } catch (Exception exc) {
+            exc.printStackTrace(System.out);
+        }
+    }
+	public void playLossSound() {
+
+        try {
+            java.net.URL url = this.getClass().getClassLoader().getResource("LossSound.wav");
             Clip clip = AudioSystem.getClip();
             clip.open(AudioSystem.getAudioInputStream(url));
             clip.start();
