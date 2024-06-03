@@ -192,6 +192,27 @@ public class DLList<E> implements Serializable{
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'iterator'");
     }
+    public void sort() {
+        if (size <= 1) {
+            return; // Already sorted or empty list
+        }
+
+        boolean swapped = true;
+        while (swapped) {
+            swapped = false;
+            Node<E> current = head.next();
+            while (current != tail && current.next() != tail) {
+                if (((Comparable<E>) current.get()).compareTo(current.next().get()) > 0) {
+                    // Swap current and nextNode
+                    E temp = current.get();
+                    current.set(current.next().get());
+                    current.next().set(temp);
+                    swapped = true;
+                }
+                current = current.next();
+            }
+        }
+    }
 
 
 
