@@ -226,9 +226,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 
 			double angleIncrement = 2 * Math.PI / numPlayers; // Angle between each player in radians
 
-			System.out.println("Hand size: " + hand.size());
-			System.out.println("turns size: " + turns.size());
-
+			
 			for (int i = 0; i < numPlayers; i++) {
 				double angle = i * angleIncrement;
 				int playerX = centerX + (int) (radius * Math.cos(angle));
@@ -280,11 +278,11 @@ public class ClientScreen extends JPanel implements ActionListener {
 				}
 
 				for (int s = 0; s < hand.size(); s++) {
-					System.out.println("on my way");
+				
 					Image image;
 					if (turns.get(i) != null && turns.get(i).getId() != me.getId()) {
 						if (ifWin) {
-							System.out.println("picture hand");
+						
 
 							image = new ImageIcon(turns.get(i).getHand().getCard(s).getImage()).getImage();
 						} else {
@@ -324,9 +322,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 
 			}
 
-			System.out.println(pGame.keySet().toDLList().size() + " size");
-
-			System.out.println("server");
+			
 
 			String all = "Players: ";
 			if (pGame.get(newS).get(0).isInGame()) {
@@ -338,7 +334,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 
 			for (int i = 0; i < pGame.get(newS).size(); i++) {
 
-				System.out.println("damgss");
+				
 				if (i == pGame.get(newS).size() - 1) {
 					all += pGame.get(newS).get(i).getName();
 
@@ -352,12 +348,12 @@ public class ClientScreen extends JPanel implements ActionListener {
 
 		}
 		if (isCreate) {
-			System.out.println("create");
+		
 
 			String all = "Players: ";
-			System.out.println(pGame.get(me).size() + ": new");
+		
 			if (pGame.get(me).size() >= 2 && pGame.get(me).size() <= 8 && once == false) {
-				System.out.println("dam works niggler");
+			
 				once = true;
 				start.setVisible(true);
 			}
@@ -398,15 +394,15 @@ public class ClientScreen extends JPanel implements ActionListener {
 		try {
 			me.setId((int) inObj.readObject());
 			pGame = (MyHashMap<Player, DLList<Player>>) inObj.readObject();
-			System.out.println(me.getId() + " my id");
+			
 
 			while (true) {
-				System.out.println("wating for object");
+			
 				Object obj = inObj.readObject();
 				if (obj instanceof Deck) {
 					if (!me.isInGame() && level == -1) {
 						deck = (Deck) obj;
-						System.out.println("works");
+					
 						DLList<Card> middleC = new DLList<>();
 						for (int i = deck.size() - 1; i >= 0; i--) {
 							if (i == deck.size() - 6) {
@@ -434,16 +430,16 @@ public class ClientScreen extends JPanel implements ActionListener {
 
 				if (obj instanceof MyHashMap) {
 
-					System.out.println("test");
-					System.out.println(pGame.size() + "old");
+				
+				
 					pGame = (MyHashMap<Player, DLList<Player>>) obj;
-					System.out.println(pGame.size() + "new");
+					
 
 				} else if (obj instanceof Integer) {
-					System.out.println("step 1");
+				
 
 					if (isMiddleS && deck != null) {
-						System.out.println("step 1 mybe");
+					
 						sizeMiddle = (int) obj;
 						isMiddleS = false;
 						if (sizeMiddle >= 3) {
@@ -463,10 +459,9 @@ public class ClientScreen extends JPanel implements ActionListener {
 						}
 
 					} else {
-						System.out.println("step 1 completed");
-
+					
 						index = (int) obj;
-						System.out.println("dam: " + index);
+					
 
 					}
 
@@ -482,8 +477,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 					level = r;
 				} else if (obj instanceof DLList) {
 					turns = (DLList) obj;
-					System.out.println("start");
-
+					
 					for (int i = 0; i < turns.size(); i++) {
 						if (turns.get(i).getId() == me.getId()) {
 							me.loss = turns.get(i).loss;
@@ -491,7 +485,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 						}
 					}
 
-					System.out.println(me.getId());
+					
 					boolean is = false;
 					for (int i = 0; i < turns.size(); i++) {
 						if (turns.get(i).getId() == me.getId()) {
@@ -499,7 +493,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 						}
 					}
 					if (is == false) {
-						System.out.println("not works");
+
 						turns = new DLList<>();
 						deck = null;
 						middle = new Deck(null);
@@ -508,7 +502,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 					} else {
 
 						if (turns.get(index).getId() == me.getId()) {
-							System.out.println("finish");
+						
 							turns.get(index).setHand(hand);
 							boolean checkFC = true;
 							for (int i = 0; i < turns.size(); i++) {
@@ -540,7 +534,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 									turns.get(index).won = allFold;
 									me.won = allFold;
 
-									System.out.println("you win!!!");
+								
 
 								} else {
 									betButton.setVisible(true);
@@ -575,7 +569,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 
 									outObj.writeObject(turns);
 									if (sizeMiddle <= middle.size()) {
-										System.out.println(sizeMiddle + ": size");
+									
 										outObj.reset();
 										outObj.writeObject("SizeMiddle");
 										outObj.reset();
@@ -584,9 +578,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 									}
 
 								} catch (IOException ex) {
-									System.out.println("ddam");
-									System.err.println(ex);
-									System.exit(1);
+									
 								}
 
 							}
@@ -602,12 +594,10 @@ public class ClientScreen extends JPanel implements ActionListener {
 			}
 
 		} catch (ClassNotFoundException e) {
-			System.err.println("Class does not exist" + e);
-			System.exit(1);
+		
 		} catch (IOException e) {
 
-			System.err.println("Couldn't get I/O for the connection to " + e);
-			System.exit(1);
+			
 		}
 	}
 
@@ -617,10 +607,10 @@ public class ClientScreen extends JPanel implements ActionListener {
 
 		for (int i = 0; i < view.size(); i++) {
 			if (e.getSource() == view.get(i)) {
-				System.out.println("good");
+				
 				String s = view.get(i).getName();
 
-				System.out.println(s);
+				
 				int counts = Integer.parseInt(s);
 				newS = new Player(null, counts, false, hand);
 
@@ -631,20 +621,18 @@ public class ClientScreen extends JPanel implements ActionListener {
 				pGame.get(newS).add(me);
 				try {
 
-					System.out.println("do it");
+					
 					outObj.reset();
 					outObj.writeObject(pGame);
-					System.out.println("do it 2");
+					
 					outObj.reset();
 					outObj.writeObject(newS);
 
 				} catch (IOException ex) {
-					System.out.println("ddam");
-					System.err.println(ex);
-					System.exit(1);
+					
 				}
 
-				System.out.println(newS);
+				
 
 			}
 		}
@@ -666,7 +654,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 				chipsField.setVisible(true);
 				pGame.put(me, new DLList<Player>());
 				pGame.get(me).add(me);
-				System.out.println(pGame.size());
+			
 				;
 
 				CreateGame.setVisible(false);
@@ -683,9 +671,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 				outObj.writeObject(pGame);
 
 			} catch (IOException ex) {
-				System.out.println("ddam");
-				System.err.println(ex);
-				System.exit(1);
+				
 			}
 
 		}
@@ -693,7 +679,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 		if (e.getSource() == JoinGame) {
 
 			chipsField.setVisible(true);
-			System.out.println(pGame.size() + " size");
+		
 			chipInstructions.setText("enter your starting points");
 			chipInstructions.setVisible(true);
 
@@ -701,13 +687,13 @@ public class ClientScreen extends JPanel implements ActionListener {
 			JoinGame.setVisible(false);
 
 			DLList<Player> arr = pGame.keySet().toDLList();
-			System.out.println(arr.size() + " ,ax");
+		
 			int y = 200;
 			view = new DLList<>();
 
 			for (int i = 0; i < arr.size(); i++) {
 				if (!arr.get(i).isInGame()) {
-					System.out.println("test");
+				
 					JButton a = new JButton(arr.get(i).getName() + "'s server");
 					a.setName(arr.get(i).getId() + "");
 					a.addActionListener(this);
@@ -732,7 +718,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 			chipInstructions.setVisible(false);
 			me.setChips(Integer.parseInt(chipsField.getText()) - me.getPoints());
 
-			System.out.println("starting: " + me.getChips());
+		
 			PlayersInServer.setVisible(false);
 		
 			start.setVisible(false);
@@ -754,9 +740,9 @@ public class ClientScreen extends JPanel implements ActionListener {
 			}
 
 			deck = new Deck(all);
-			System.out.println("statt size: " + deck.size());
+		
 			deck.randomize();
-			System.out.println("ends size: " + deck.size());
+			
 			turns = pGame.get(me);
 
 			try {
@@ -769,13 +755,13 @@ public class ClientScreen extends JPanel implements ActionListener {
 					handC.add(deck.getCard(deck.size() - 1 - s));
 					deck.remove(deck.size() - 1 - s);
 				}
-				System.out.println("deck size1: " + deck.size());
+			
 				hand = new Deck(handC);
 
 				for (int i = 1; i < turns.size(); i++) {
 
 					handC = new DLList<>();
-					System.out.println("deck size2: " + deck.size());
+				
 					for (int s = 0; s < 2; s++) {
 
 						handC.add(deck.getCard(deck.size() - 1 - s));
@@ -836,9 +822,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 
 				repaint();
 			} catch (IOException ex) {
-				System.out.println("ddam");
-				System.err.println(ex);
-				System.exit(1);
+				
 			}
 			// move.setVisible(true);
 			// betButton.setVisible(true);
@@ -913,7 +897,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 
 				outObj.writeObject(turns);
 				if (sizeMiddle <= middle.size()) {
-					System.out.println(sizeMiddle + ": size");
+					
 					outObj.reset();
 					outObj.writeObject("SizeMiddle");
 					outObj.reset();
@@ -922,20 +906,15 @@ public class ClientScreen extends JPanel implements ActionListener {
 				}
 
 			} catch (IOException ex) {
-				System.out.println("ddam");
-				System.err.println(ex);
-				System.exit(1);
+				
 			}
 		}
 
 		if (e.getSource() == betButton) {
-			System.out.println("right player: " + turns.get(index).getName());
-
-			System.out.println("right index: " + index);
+			
 
 			int betAmount = Integer.parseInt(bettingField.getText());
-			System.out.println("bet Amount: " + betAmount);
-			System.out.println("bet is: " + turns.get(index).getPoints());
+			
 			boolean isbigger = true;
 			for (int i = 0; i < turns.size(); i++) {
 				if (turns.get(i).getPoints() >= betAmount) {
@@ -987,8 +966,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 								PokerHandChecker currentHand = new PokerHandChecker(turns.get(i).getHand());
 
 								// Compare the current hand with the best hand
-								if (PokerHandChecker.compareHands(currentHand, bestHand) > 0
-										&& !turns.get(i).getFold()) {
+								if (PokerHandChecker.compareHands(currentHand, bestHand) > 0) {
 									bestPlayerIndex = i;
 									// If the current hand is better, update bestHand to be the current hand
 									bestHand = currentHand;
@@ -1016,7 +994,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 
 					outObj.writeObject(turns);
 					if (sizeMiddle <= middle.size()) {
-						System.out.println(sizeMiddle + ": size");
+					
 						outObj.reset();
 						outObj.writeObject("SizeMiddle");
 						outObj.reset();
@@ -1025,9 +1003,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 					}
 
 				} catch (IOException ex) {
-					System.out.println("ddam");
-					System.err.println(ex);
-					System.exit(1);
+				
 				}
 			}
 
@@ -1054,7 +1030,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 
 				outObj.writeObject(turns);
 				if (sizeMiddle <= middle.size()) {
-					System.out.println(sizeMiddle + ": size");
+				
 					outObj.reset();
 					outObj.writeObject("SizeMiddle");
 					outObj.reset();
@@ -1063,9 +1039,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 				}
 
 			} catch (IOException ex) {
-				System.out.println("ddam");
-				System.err.println(ex);
-				System.exit(1);
+				
 			}
 			repaint();
 
@@ -1116,7 +1090,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 							PokerHandChecker currentHand = new PokerHandChecker(turns.get(i).getHand());
 
 							// Compare the current hand with the best hand
-							if (PokerHandChecker.compareHands(currentHand, bestHand) > 0) {
+							if (PokerHandChecker.compareHands(currentHand, bestHand) > 0 ) {
 								bestPlayerIndex = i;
 								// If the current hand is better, update bestHand to be the current hand
 								bestHand = currentHand;
@@ -1144,7 +1118,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 
 				outObj.writeObject(turns);
 				if (sizeMiddle <= middle.size()) {
-					System.out.println(sizeMiddle + ": size");
+					
 					outObj.reset();
 					outObj.writeObject("SizeMiddle");
 					outObj.reset();
@@ -1153,9 +1127,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 				}
 
 			} catch (IOException ex) {
-				System.out.println("ddam");
-				System.err.println(ex);
-				System.exit(1);
+				
 			}
 		}
 		if (e.getSource() == ResetButton) {

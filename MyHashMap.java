@@ -82,6 +82,10 @@ public class MyHashMap<K,V>  implements Iterable<V>,Serializable{
           
         };
     }
+    public V getOrDefault(Object o, V defaultValue) {
+        V value = get(o);
+        return value != null ? value : defaultValue;
+    }
    
 
   
