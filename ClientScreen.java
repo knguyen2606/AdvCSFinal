@@ -1110,12 +1110,10 @@ public class ClientScreen extends JPanel implements ActionListener {
 
 				outObj.writeObject(turns);
 				if (sizeMiddle <= middle.size()) {
-
 					outObj.reset();
 					outObj.writeObject("SizeMiddle");
 					outObj.reset();
 					outObj.writeObject(sizeMiddle);
-
 				}
 
 			} catch (IOException ex) {
@@ -1248,6 +1246,7 @@ public class ClientScreen extends JPanel implements ActionListener {
             Clip clip = AudioSystem.getClip();
             clip.open(AudioSystem.getAudioInputStream(url));
             clip.start();
+			
 			
         } catch (Exception exc) {
             exc.printStackTrace(System.out);
