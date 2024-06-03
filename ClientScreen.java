@@ -852,6 +852,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 					} else {
 						PokerHandChecker bestHand = new PokerHandChecker(turns.get(0).getHand());
 						int bestPlayerIndex = 0;
+						String bestHandStatus = turns.get(0).handStatus;
 
 						// Loop through each turn in the turns list starting from the second hand
 						for (int i = 1; i < turns.size(); i++) {
@@ -859,8 +860,10 @@ public class ClientScreen extends JPanel implements ActionListener {
 							PokerHandChecker currentHand = new PokerHandChecker(turns.get(i).getHand());
 
 							// Compare the current hand with the best hand
-							if (PokerHandChecker.compareHands(currentHand, bestHand) > 0) {
+							if (PokerHandChecker.compareHands(currentHand, bestHand, turns.get(i).handStatus,
+									bestHandStatus) > 0) {
 								bestPlayerIndex = i;
+								bestHandStatus = turns.get(i).handStatus;
 								// If the current hand is better, update bestHand to be the current hand
 								bestHand = currentHand;
 							}
@@ -912,7 +915,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 
 			}
 			if (isbigger && betAmount <= turns.get(index).getChips() + turns.get(index).getPoints()) {
-				
+
 				check.setVisible(false);
 				betButton.setVisible(false);
 				bettingField.setVisible(false);
@@ -949,6 +952,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 						} else {
 							PokerHandChecker bestHand = new PokerHandChecker(turns.get(0).getHand());
 							int bestPlayerIndex = 0;
+							String bestHandStatus = turns.get(0).handStatus;
 
 							// Loop through each turn in the turns list starting from the second hand
 							for (int i = 1; i < turns.size(); i++) {
@@ -956,8 +960,10 @@ public class ClientScreen extends JPanel implements ActionListener {
 								PokerHandChecker currentHand = new PokerHandChecker(turns.get(i).getHand());
 
 								// Compare the current hand with the best hand
-								if (PokerHandChecker.compareHands(currentHand, bestHand) > 0) {
+								if (PokerHandChecker.compareHands(currentHand, bestHand, turns.get(i).handStatus,
+										bestHandStatus) > 0) {
 									bestPlayerIndex = i;
+									bestHandStatus = turns.get(i).handStatus;
 									// If the current hand is better, update bestHand to be the current hand
 									bestHand = currentHand;
 								}
@@ -1075,6 +1081,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 					} else {
 						PokerHandChecker bestHand = new PokerHandChecker(turns.get(0).getHand());
 						int bestPlayerIndex = 0;
+						String bestHandStatus = turns.get(0).handStatus;
 
 						// Loop through each turn in the turns list starting from the second hand
 						for (int i = 1; i < turns.size(); i++) {
@@ -1082,8 +1089,10 @@ public class ClientScreen extends JPanel implements ActionListener {
 							PokerHandChecker currentHand = new PokerHandChecker(turns.get(i).getHand());
 
 							// Compare the current hand with the best hand
-							if (PokerHandChecker.compareHands(currentHand, bestHand) > 0) {
+							if (PokerHandChecker.compareHands(currentHand, bestHand, turns.get(i).handStatus,
+									bestHandStatus) > 0) {
 								bestPlayerIndex = i;
+								bestHandStatus = turns.get(i).handStatus;
 								// If the current hand is better, update bestHand to be the current hand
 								bestHand = currentHand;
 							}
@@ -1121,7 +1130,7 @@ public class ClientScreen extends JPanel implements ActionListener {
 			}
 		}
 		if (e.getSource() == ResetButton) {
-		
+
 			playSound();
 			pGame = new MyHashMap<>();
 			int id = me.getId();
@@ -1215,41 +1224,43 @@ public class ClientScreen extends JPanel implements ActionListener {
 		repaint();
 
 	}
+
 	public void playSound() {
 
-        try {
-            java.net.URL url = this.getClass().getClassLoader().getResource("PokerClick.wav");
-            Clip clip = AudioSystem.getClip();
-            clip.open(AudioSystem.getAudioInputStream(url));
-            clip.start();
-			
-        } catch (Exception exc) {
-            exc.printStackTrace(System.out);
-        }
-    }
+		try {
+			java.net.URL url = this.getClass().getClassLoader().getResource("PokerClick.wav");
+			Clip clip = AudioSystem.getClip();
+			clip.open(AudioSystem.getAudioInputStream(url));
+			clip.start();
+
+		} catch (Exception exc) {
+			exc.printStackTrace(System.out);
+		}
+	}
+
 	public void playWinSound() {
 
-        try {
-            java.net.URL url = this.getClass().getClassLoader().getResource("WinSound.wav");
-            Clip clip = AudioSystem.getClip();
-            clip.open(AudioSystem.getAudioInputStream(url));
-            clip.start();
-			
-        } catch (Exception exc) {
-            exc.printStackTrace(System.out);
-        }
-    }
+		try {
+			java.net.URL url = this.getClass().getClassLoader().getResource("WinSound.wav");
+			Clip clip = AudioSystem.getClip();
+			clip.open(AudioSystem.getAudioInputStream(url));
+			clip.start();
+
+		} catch (Exception exc) {
+			exc.printStackTrace(System.out);
+		}
+	}
+
 	public void playLossSound() {
 
-        try {
-            java.net.URL url = this.getClass().getClassLoader().getResource("LossSound.wav");
-            Clip clip = AudioSystem.getClip();
-            clip.open(AudioSystem.getAudioInputStream(url));
-            clip.start();
-			
-			
-        } catch (Exception exc) {
-            exc.printStackTrace(System.out);
-        }
-    }
+		try {
+			java.net.URL url = this.getClass().getClassLoader().getResource("LossSound.wav");
+			Clip clip = AudioSystem.getClip();
+			clip.open(AudioSystem.getAudioInputStream(url));
+			clip.start();
+
+		} catch (Exception exc) {
+			exc.printStackTrace(System.out);
+		}
+	}
 }
